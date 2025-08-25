@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8fafc;
+  --foreground: #171717;
+}
+
+body {
+  background: linear-gradient(135deg, #c7d2fe 0%, #e9d5ff 50%, #fbcfe8 100%);
+  color: var(--foreground);
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+h1, h2 {
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+
+a {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.15);
+}
+
+.shadow-2xl {
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.12), 0 1.5px 6px rgba(236, 72, 153, 0.08);
+}
+
+.rounded-2xl {
+  border-radius: 1.25rem;
+}
+
+/* Custom utility for glassmorphism effect */
+.bg-white\/90 {
+  background: rgba(255,255,255,0.90);
+  backdrop-filter: blur(8px);
+}
