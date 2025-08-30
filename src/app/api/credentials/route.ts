@@ -1,112 +1,117 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { open } from 'sqlite';
-import sqlite3 from 'sqlite3';
-import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
-// Helper to get DB connection
-async function getDB() {
-  return open({
-    filename: './credentials.db',
-    driver: sqlite3.Database,
-  });
-}
-
-// Encrypt credentials before storing
-function encrypt(text: string, secret: string) {
-  const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(secret, 'hex'), iv);
-  let encrypted = cipher.update(text);
-  encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return iv.toString('hex') + ':' + encrypted.toString('hex');
-}
+import { AuthService, DatabaseService, EncryptionService } from '@/services';
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const { platform, credentials } = body;
-  const secret = process.env.CREDENTIAL_SECRET;
-  if (!secret) return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
-
-  // Extract userId from JWT session cookie using next/headers
-  const cookieStore = await cookies();
-  const token = cookieStore.get('session')?.value;
-  if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  let userId;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'replace_with_a_secure_secret') as { pubkey: string };
-    userId = decoded.pubkey;
-  } catch (e) {
-    return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
-  }
+    const body = await request.json();
+    const { platform, credentials, isUpdate } = body;
+    
+    console.log('Storing credentials for platform:', platform, isUpdate ? '(update)' : '(new)');
+    
+    const authService = new AuthService();
+    const userId = await authService.getUserIdFromToken();
+    if (!userId) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
 
-  const db = await getDB();
-  await db.run(
-    'CREATE TABLE IF NOT EXISTS credentials (id INTEGER PRIMARY KEY, userId TEXT, platform TEXT, credentials TEXT)'
-  );
-  const encrypted = encrypt(JSON.stringify(credentials), secret);
-  await db.run(
-    'INSERT INTO credentials (userId, platform, credentials) VALUES (?, ?, ?)',
-    userId,
-    platform,
-    encrypted
-  );
-  return NextResponse.json({ success: true });
+    if (!platform || !credentials) {
+      return NextResponse.json({ error: 'Platform and credentials are required' }, { status: 400 });
+    }
+
+    const dbService = DatabaseService.getInstance();
+    const encryptionService = new EncryptionService();
+    
+    let finalCredentials = credentials;
+    
+    // If this is an update, we need to handle masked fields
+    if (isUpdate) {
+      // Get existing credentials
+      const existingCreds = dbService.getCredentials(userId, platform);
+      if (existingCreds.length > 0) {
+        const decryptedExisting = JSON.parse(encryptionService.decrypt(existingCreds[0].credentials));
+        
+        // For each field that has the masked value, use the existing value
+        Object.keys(finalCredentials).forEach(field => {
+          if (finalCredentials[field] === '••••••••') {
+            finalCredentials[field] = decryptedExisting[field];
+          }
+        });
+      }
+    }
+    
+    // Encrypt credentials
+    const encryptedCredentials = encryptionService.encrypt(JSON.stringify(finalCredentials));
+    
+    // Store in database
+    dbService.saveCredentials(userId, platform, encryptedCredentials);
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: isUpdate ? 'Credentials updated successfully' : 'Credentials saved successfully' 
+    });
+    
+  } catch (error: any) {
+    console.error('Error saving credentials:', error);
+    return NextResponse.json({ 
+      error: error.message || 'Failed to save credentials' 
+    }, { status: 500 });
+  }
 }
 
 export async function GET(request: Request) {
-  const secret = process.env.CREDENTIAL_SECRET;
-  if (!secret) return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
-
-  const cookieStore = await cookies();
-  const token = cookieStore.get('session')?.value;
-  if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  let userId;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'replace_with_a_secure_secret') as { pubkey: string };
-    userId = decoded.pubkey;
-  } catch (e) {
-    return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
-  }
+    const authService = new AuthService();
+    const userId = await authService.getUserIdFromToken();
+    if (!userId) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
 
-  const db = await getDB();
-  const rows = await db.all('SELECT id, platform, credentials FROM credentials WHERE userId = ?', userId);
-  // Decrypt credentials
-  const decryptedRows = rows.map((row: any) => {
-    const [ivHex, encryptedHex] = row.credentials.split(':');
-    const iv = Buffer.from(ivHex, 'hex');
-    const encrypted = Buffer.from(encryptedHex, 'hex');
-    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(secret, 'hex'), iv);
-    let decrypted = decipher.update(encrypted);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
-    return {
-      id: row.id,
-      platform: row.platform,
-      credentials: JSON.parse(decrypted.toString()),
-    };
-  });
-  return NextResponse.json({ credentials: decryptedRows });
+    const dbService = DatabaseService.getInstance();
+    
+    // Get all credentials for user
+    const credentials = dbService.getCredentials(userId);
+    
+    // Return platform list (without sensitive data)
+    const platformList = credentials.map((cred: any) => ({
+      platform: cred.platform,
+      hasCredentials: true,
+      lastUpdated: cred.created_at
+    }));
+    
+    return NextResponse.json({ platforms: platformList });
+    
+  } catch (error: any) {
+    console.error('Error fetching credentials:', error);
+    return NextResponse.json({ 
+      error: error.message || 'Failed to fetch credentials' 
+    }, { status: 500 });
+  }
 }
 
 export async function DELETE(request: Request) {
-  const secret = process.env.CREDENTIAL_SECRET;
-  if (!secret) return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
-
-  const cookieStore = await cookies();
-  const token = cookieStore.get('session')?.value;
-  if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  let userId;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'replace_with_a_secure_secret') as { pubkey: string };
-    userId = decoded.pubkey;
-  } catch (e) {
-    return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+    const url = new URL(request.url);
+    const platform = url.searchParams.get('platform');
+    
+    if (!platform) {
+      return NextResponse.json({ error: 'Platform parameter is required' }, { status: 400 });
+    }
+
+    const authService = new AuthService();
+    const userId = await authService.getUserIdFromToken();
+    if (!userId) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const dbService = DatabaseService.getInstance();
+    dbService.deleteCredentials(userId, platform);
+    
+    return NextResponse.json({ success: true, message: 'Credentials deleted successfully' });
+    
+  } catch (error: any) {
+    console.error('Error deleting credentials:', error);
+    return NextResponse.json({ 
+      error: error.message || 'Failed to delete credentials' 
+    }, { status: 500 });
   }
-
-  const body = await request.json();
-  const { id } = body;
-  if (!id) return NextResponse.json({ error: 'Missing credential id' }, { status: 400 });
-
-  const db = await getDB();
-  await db.run('DELETE FROM credentials WHERE id = ? AND userId = ?', id, userId);
-  return NextResponse.json({ success: true });
 }
