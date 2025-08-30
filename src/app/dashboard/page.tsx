@@ -263,6 +263,13 @@ export default function DashboardPage() {
 
       // Handle server-side posting (Mastodon, BlueSky, Twitter)
       if (serverPlatforms.length > 0) {
+        console.log('🌐 Making server-side post request:', {
+          platforms: serverPlatforms,
+          messageLength: message.trim().length,
+          imageCount: imageData.length,
+          hasImages: imageData.length > 0
+        });
+
         const response = await fetch('/api/post', {
           method: 'POST',
           headers: {
@@ -277,11 +284,17 @@ export default function DashboardPage() {
         });
 
         const data = await response.json();
+        console.log('🌐 Server-side post response:', {
+          ok: response.ok,
+          status: response.status,
+          data: data
+        });
         
         if (response.ok) {
           Object.assign(results, data.results || {});
           Object.assign(errors, data.errors || {});
         } else {
+          console.error('❌ Server-side post failed:', data);
           // Mark all server platforms as failed
           serverPlatforms.forEach(platform => {
             errors[platform] = data.error || 'Server error';
@@ -291,30 +304,49 @@ export default function DashboardPage() {
 
       // Handle client-side posting (NIP-07 Nostr)
       if (clientPlatforms.includes('nostr')) {
+        console.log('🔑 Starting client-side Nostr post process...');
         try {
           // First check if user has NIP-07 configured
+          console.log('🔍 Checking Nostr credentials...');
           const credsResponse = await fetch('/api/credentials/nostr', {
             credentials: 'include'
           });
           
           if (credsResponse.ok) {
             const credsData = await credsResponse.json();
+            console.log('✅ Nostr credentials response:', {
+              exists: credsData.exists,
+              method: credsData.credentials?.method,
+              hasBlossomServer: !!credsData.credentials?.blossom_server,
+              blossomServer: credsData.credentials?.blossom_server,
+              nip07Available: nip07Available
+            });
             
             if ((credsData.exists && credsData.credentials.method === 'nip07') || (!credsData.exists && nip07Available)) {
               // Use client-side posting service
+              console.log('🚀 Using client-side NIP-07 posting...');
               const { ClientPostingService } = await import('@/services/ClientPostingService');
               
-
               // Use stored credentials if they exist, otherwise use empty config for pure NIP-07
               const credentials = credsData.exists ? credsData.credentials : { method: 'nip07' };
+              console.log('🔑 NIP-07 credentials prepared:', {
+                hasCredentials: !!credentials,
+                method: credentials.method,
+                hasBlossomServer: !!credentials.blossom_server,
+                blossomServer: credentials.blossom_server
+              });
+
               const nostrResult = await ClientPostingService.postToNostrNip07({
                 text: message.trim(),
                 images: imageData.length > 0 ? imageData : undefined
               }, credentials);
               
+              console.log('🔑 NIP-07 post result:', nostrResult);
+              
               if (nostrResult.success) {
                 results.nostr = 'Success';
               } else {
+                console.error('❌ NIP-07 post failed:', nostrResult.error);
                 errors.nostr = nostrResult.error || 'Failed to post';
               }
             } else {

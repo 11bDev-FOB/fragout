@@ -1,0 +1,26 @@
+services:
+  yall-web-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development  # We'll add this target to the Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+      - ADMIN_PUBKEYS=8dc8688200b447ec2e4018ea5e42dc5d480940cb3f19ca8f361d28179dc4ba5e
+      - JWT_SECRET=k6P42prESOlTr0axP847oPjUih8m6UdSfZZrQxHc5Uk+sre40bFpE3qU0yb7GQK9x8vRyK5Iof20n8b8fhJzcg==
+      - ENCRYPTION_SECRET=d538a9c36734d910a3693e23bb14982cc4b4084fff01b422d7e2d0f0ee215cfd
+      - DATABASE_PATH=/app/data/app.db
+    volumes:
+      - ./src:/app/src:ro
+      - ./public:/app/public:ro
+      - yall_data_dev:/app/data
+      - yall_db_dev:/app/db
+    restart: unless-stopped
+    command: npm run dev
+
+volumes:
+  yall_data_dev:
+  yall_db_dev:

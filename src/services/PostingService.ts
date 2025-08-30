@@ -104,12 +104,35 @@ class PostingService {
           // Decrypt credentials
           const decryptedCreds = this.encryption.decrypt(platformCreds.credentials);
           const credsObject = JSON.parse(decryptedCreds);
-          console.log(`Credentials loaded for ${platformId}, keys:`, Object.keys(credsObject));
+          console.log(`✅ Credentials loaded for ${platformId}, keys:`, Object.keys(credsObject));
+
+          // Special logging for Nostr with images
+          if (platformId === 'nostr' && job.content.images && job.content.images.length > 0) {
+            console.log('🔍 Nostr image post analysis:', {
+              platform: platformId,
+              hasBlossomServer: !!credsObject.blossom_server,
+              blossomServer: credsObject.blossom_server || 'NOT_SET',
+              method: credsObject.method || 'NOT_SET',
+              hasPubkey: !!credsObject.pubkey,
+              hasPrivateKey: !!credsObject.private_key,
+              imageCount: job.content.images.length,
+              credKeys: Object.keys(credsObject)
+            });
+
+            if (!credsObject.blossom_server) {
+              console.error('❌ Nostr image upload will fail: No Blossom server configured');
+            }
+          }
 
           // Post to platform
-          console.log(`Posting to ${platformId}...`);
+          console.log(`🚀 Posting to ${platformId}...`);
           const result = await platformService.post(job.content, credsObject);
-          console.log(`${platformId} post result:`, result);
+          console.log(`📊 ${platformId} post result:`, {
+            success: result.success,
+            postId: result.postId,
+            url: result.url,
+            error: result.error
+          });
           job.results[platformId] = result;
 
         } catch (error: any) {

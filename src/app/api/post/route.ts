@@ -6,26 +6,46 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { message, platforms, images } = body;
     
-    console.log('Post request received:', { 
+    console.log('📝 Post request received:', { 
       platforms, 
       messageLength: message?.length,
-      imageCount: images?.length || 0
+      imageCount: images?.length || 0,
+      hasImages: !!(images?.length),
+      nostrSelected: platforms?.includes('nostr')
     });
+    
+    // Log image details if present
+    if (images?.length > 0) {
+      console.log('🖼️ Image details:', {
+        count: images.length,
+        sizes: images.map((img: string, i: number) => ({
+          index: i,
+          dataUrlLength: img.length,
+          mimeType: img.split(',')[0]
+        }))
+      });
+    }
     
     const authService = new AuthService();
     const userId = await authService.getUserIdFromToken();
     if (!userId) {
+      console.log('❌ Authentication failed - no user ID');
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
+    console.log('✅ User authenticated:', userId);
+
     if (!message || !message.trim()) {
+      console.log('❌ Empty message provided');
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
     if (!platforms || platforms.length === 0) {
+      console.log('❌ No platforms selected');
       return NextResponse.json({ error: 'At least one platform must be selected' }, { status: 400 });
     }
 
+    console.log('🚀 Starting post creation with PostingService...');
     const postingService = new PostingService();
     
     // Create and process the post

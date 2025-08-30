@@ -205,6 +205,14 @@ export class NostrService extends BasePlatformService {
 
       // Handle image uploads if provided
       if (content.images && content.images.length > 0 && blossom_server) {
+        console.log('🖼️ Starting Nostr image upload process:', {
+          imageCount: content.images.length,
+          blossomServer: blossom_server,
+          method: method,
+          hasEventPubkey: !!eventPubkey,
+          hasPrivateKey: !!private_key
+        });
+
         try {
           const imageUrls: string[] = [];
           
@@ -218,27 +226,52 @@ export class NostrService extends BasePlatformService {
           // Add private key if not using NIP-07
           if (method !== 'nip07' && private_key) {
             blossomCredentials.private_key = private_key;
+            console.log('✅ Private key added to Blossom credentials');
+          } else if (method === 'nip07') {
+            console.log('✅ Using NIP-07 for Blossom signing');
+          } else {
+            console.log('⚠️ No private key or NIP-07 available for Blossom signing');
           }
           
-          for (const imageData of content.images) {
+          console.log('📤 Uploading images to Blossom server...');
+          for (let i = 0; i < content.images.length; i++) {
+            const imageData = content.images[i];
+            console.log(`📷 Uploading image ${i + 1}/${content.images.length}...`);
+            
             const uploadResult = await ImageUploadService.uploadToBlossom(
               imageData, 
               blossom_server, 
               blossomCredentials
             );
             
+            console.log(`📷 Image ${i + 1} upload result:`, {
+              success: uploadResult.success,
+              url: uploadResult.url,
+              error: uploadResult.error
+            });
+            
             if (uploadResult.success && uploadResult.url) {
               imageUrls.push(uploadResult.url);
               tags.push(['r', uploadResult.url]); // Add image reference tag
+              console.log(`✅ Image ${i + 1} uploaded successfully: ${uploadResult.url}`);
             } else {
-              console.warn('Failed to upload image to Blossom:', uploadResult.error);
+              console.error(`❌ Failed to upload image ${i + 1} to Blossom:`, uploadResult.error);
               // Continue with other images or post without this image
             }
           }
           
+          console.log('📤 Image upload summary:', {
+            totalImages: content.images.length,
+            successfulUploads: imageUrls.length,
+            imageUrls: imageUrls
+          });
+          
           // Add image URLs to content
           if (imageUrls.length > 0) {
             eventContent += '\n\n' + imageUrls.join('\n');
+            console.log('✅ Image URLs added to Nostr event content');
+          } else {
+            console.log('⚠️ No images were successfully uploaded');
           }
           
         } catch (error: any) {

@@ -30,6 +30,30 @@ ENV ENCRYPTION_SECRET=dummy_build_secret_will_be_replaced_at_runtime
 
 RUN npm run build
 
+# Development stage for debugging and testing
+FROM base AS development
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Create database directory with proper permissions
+RUN mkdir -p /app/data /app/db
+RUN chown -R nextjs:nodejs /app
+
+USER nextjs
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["npm", "run", "dev"]
+
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app

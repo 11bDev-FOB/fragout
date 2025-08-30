@@ -37,6 +37,12 @@ export class ClientPostingService {
 
       // Handle image uploads if provided
       if (content.images && content.images.length > 0 && blossom_server) {
+        console.log('🖼️ Starting NIP-07 Nostr image upload process:', {
+          imageCount: content.images.length,
+          blossomServer: blossom_server,
+          eventPubkey: eventPubkey?.substring(0, 8) + '...'
+        });
+
         try {
           const imageUrls: string[] = [];
           
@@ -47,25 +53,45 @@ export class ClientPostingService {
             useNip07: true
           };
           
-          for (const imageData of content.images) {
+          console.log('📤 Uploading images to Blossom server via NIP-07...');
+          for (let i = 0; i < content.images.length; i++) {
+            const imageData = content.images[i];
+            console.log(`📷 Uploading image ${i + 1}/${content.images.length} via NIP-07...`);
+            
             const uploadResult = await ImageUploadService.uploadToBlossom(
               imageData, 
               blossom_server, 
               blossomCredentials
             );
             
+            console.log(`📷 NIP-07 Image ${i + 1} upload result:`, {
+              success: uploadResult.success,
+              url: uploadResult.url,
+              error: uploadResult.error
+            });
+            
             if (uploadResult.success && uploadResult.url) {
               imageUrls.push(uploadResult.url);
               tags.push(['r', uploadResult.url]); // Add image reference tag
+              console.log(`✅ NIP-07 Image ${i + 1} uploaded successfully: ${uploadResult.url}`);
             } else {
-              console.warn('Failed to upload image to Blossom:', uploadResult.error);
+              console.error(`❌ Failed to upload NIP-07 image ${i + 1} to Blossom:`, uploadResult.error);
               // Continue with other images or post without this image
             }
           }
           
+          console.log('📤 NIP-07 Image upload summary:', {
+            totalImages: content.images.length,
+            successfulUploads: imageUrls.length,
+            imageUrls: imageUrls
+          });
+          
           // Add image URLs to content
           if (imageUrls.length > 0) {
             eventContent += '\n\n' + imageUrls.join('\n');
+            console.log('✅ Image URLs added to NIP-07 Nostr event content');
+          } else {
+            console.log('⚠️ No images were successfully uploaded via NIP-07');
           }
           
         } catch (error: any) {

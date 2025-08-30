@@ -173,19 +173,39 @@ class ImageUploadService {
 
       // Create authorization header if credentials are provided
       if (credentials) {
+        console.log('🔐 Credentials provided for Blossom auth:', {
+          hasCredentials: !!credentials,
+          credentialKeys: Object.keys(credentials),
+          hasPubkey: !!credentials.pubkey,
+          useNip07: credentials.useNip07,
+          hasPrivateKey: !!credentials.private_key
+        });
+        
         try {
-          console.log('Creating Blossom authorization event...');
+          console.log('🔑 Creating Blossom authorization event...');
           const authEvent = await this.createBlossomAuthEvent(credentials, blob, normalizedServer);
+          
+          console.log('🔍 Auth event creation result:', {
+            hasAuthEvent: !!authEvent,
+            authEvent: authEvent ? {
+              kind: authEvent.kind,
+              hasId: !!authEvent.id,
+              hasSig: !!authEvent.sig,
+              pubkey: authEvent.pubkey?.substring(0, 8) + '...',
+              tagsCount: authEvent.tags?.length
+            } : null
+          });
+          
           if (authEvent) {
             const authHeader = `Nostr ${btoa(JSON.stringify(authEvent))}`;
             headers['Authorization'] = authHeader;
-            console.log('Authorization header created:', authHeader.substring(0, 50) + '...');
+            console.log('✅ Authorization header created:', authHeader.substring(0, 50) + '...');
           } else {
-            console.warn('Failed to create authorization event - no event returned');
+            console.error('❌ Failed to create authorization event - no event returned');
           }
         } catch (authError) {
-          console.error('Failed to create Blossom authorization:', authError);
-          console.warn('Trying upload without authorization...');
+          console.error('❌ Failed to create Blossom authorization:', authError);
+          console.warn('⚠️ Trying upload without authorization...');
         }
       } else {
         console.warn('No credentials provided for Blossom upload');
@@ -250,13 +270,33 @@ class ImageUploadService {
 
     // Calculate SHA256 hash of file content
     const arrayBuffer = await blob.arrayBuffer();
-    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
-    const hashArray = new Uint8Array(hashBuffer);
-    const fileHash = Array.from(hashArray)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+    let fileHash: string;
+    
+    // Try Web Crypto API first (available in secure contexts)
+    if (typeof crypto !== 'undefined' && crypto.subtle) {
+      try {
+        console.log('🔒 Using Web Crypto API for SHA256 hash...');
+        const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+        const hashArray = new Uint8Array(hashBuffer);
+        fileHash = Array.from(hashArray)
+          .map(b => {
+            const hex = b.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+          })
+          .join('');
+        console.log('✅ SHA256 hash calculated via Web Crypto API');
+      } catch (cryptoError) {
+        console.warn('⚠️ Web Crypto API failed, falling back to crypto-js SHA256:', cryptoError);
+        // Fallback to crypto-js for proper SHA256 calculation
+        fileHash = await this.calculateSimpleHash(arrayBuffer);
+      }
+    } else {
+      console.warn('⚠️ Web Crypto API not available (likely localhost/HTTP), using crypto-js SHA256 fallback');
+      // Fallback to crypto-js for proper SHA256 calculation
+      fileHash = await this.calculateSimpleHash(arrayBuffer);
+    }
 
-    console.log('File hash calculated:', fileHash.substring(0, 16) + '...');
+    console.log('📝 File hash calculated:', fileHash.substring(0, 16) + '...');
 
     // Create auth event for Blossom upload (based on Flutter implementation)
     const event = {
@@ -275,18 +315,27 @@ class ImageUploadService {
 
     // Sign the event using NIP-07 if available
     if (typeof window !== 'undefined' && (window as any).nostr && credentials.useNip07) {
+      console.log('🌐 Attempting NIP-07 signing...');
       try {
-        console.log('Signing event with NIP-07...');
+        console.log('🔑 Signing event with NIP-07...');
         const signedEvent = await (window as any).nostr.signEvent(event);
-        console.log('Event signed successfully:', signedEvent);
+        console.log('✅ NIP-07 signing successful:', {
+          hasId: !!signedEvent.id,
+          hasSig: !!signedEvent.sig,
+          pubkey: signedEvent.pubkey?.substring(0, 8) + '...'
+        });
         return signedEvent;
       } catch (error) {
-        console.error('Failed to sign auth event with NIP-07:', error);
+        console.error('❌ Failed to sign auth event with NIP-07:', error);
         throw new Error('Failed to sign authorization event');
       }
     }
 
-    console.log('No NIP-07 available, checking for private key...');
+    console.log('🔐 No NIP-07 available, checking for private key...');
+    console.log('🔍 Private key check:', {
+      hasPrivateKey: !!credentials.private_key,
+      privateKeyType: credentials.private_key?.startsWith?.('nsec1') ? 'nsec' : 'hex'
+    });
     
     // Try server-side signing with private key
     if (credentials.private_key) {
@@ -701,6 +750,26 @@ class ImageUploadService {
       
       img.src = URL.createObjectURL(imageBlob);
     });
+  }
+
+  /**
+   * Calculate a simple hash for development/localhost when Web Crypto API is not available
+   * This is NOT cryptographically secure, but works for Blossom development
+   */
+  private static async calculateSimpleHash(arrayBuffer: ArrayBuffer): Promise<string> {
+    // Use crypto-js to calculate proper SHA256 hash as fallback
+    console.log('🔧 Calculating SHA256 hash using crypto-js fallback...');
+    
+    // Convert ArrayBuffer to WordArray for crypto-js
+    const bytes = new Uint8Array(arrayBuffer);
+    const wordArray = CryptoJS.lib.WordArray.create(bytes);
+    
+    // Calculate SHA256 hash
+    const hash = CryptoJS.SHA256(wordArray);
+    const hashHex = hash.toString(CryptoJS.enc.Hex);
+    
+    console.log('✅ SHA256 hash calculated using crypto-js:', hashHex.substring(0, 16) + '...');
+    return hashHex;
   }
 
   /**
