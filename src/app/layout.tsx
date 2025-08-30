@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import React from 'react'
 import './globals.css'
 import { ThemeProvider } from '@/contexts/ThemeContext'
@@ -6,6 +6,26 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 export const metadata: Metadata = {
   title: "Y'all Web - Multi-Platform Social Media Management",
   description: 'Post to Mastodon, Bluesky, Nostr, and X from one place. Secure credential storage with Lightning payments.',
+  icons: {
+    icon: [
+      {
+        url: '/favicon.svg',
+        type: 'image/svg+xml',
+      },
+      {
+        url: '/favicon.ico',
+        sizes: '32x32',
+        type: 'image/x-icon',
+      }
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
+}
+
+export const viewport: Viewport = {
+  themeColor: '#2B2B2B',
 }
 
 export default function RootLayout({

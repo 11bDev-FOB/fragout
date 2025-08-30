@@ -258,14 +258,17 @@ export default function DashboardPage() {
           if (credsResponse.ok) {
             const credsData = await credsResponse.json();
             
-            if (credsData.exists && credsData.credentials.method === 'nip07') {
+            if ((credsData.exists && credsData.credentials.method === 'nip07') || (!credsData.exists && nip07Available)) {
               // Use client-side posting service
               const { ClientPostingService } = await import('@/services/ClientPostingService');
               
+
+              // Use stored credentials if they exist, otherwise use empty config for pure NIP-07
+              const credentials = credsData.exists ? credsData.credentials : { method: 'nip07' };
               const nostrResult = await ClientPostingService.postToNostrNip07({
                 text: message.trim(),
                 images: imageData.length > 0 ? imageData : undefined
-              }, credsData.credentials);
+              }, credentials);
               
               if (nostrResult.success) {
                 results.nostr = 'Success';
@@ -297,7 +300,7 @@ export default function DashboardPage() {
               }
             }
           } else {
-            errors.nostr = 'No Nostr credentials found';
+            errors.nostr = 'No Nostr credentials found. Configure Nostr in Platform Setup to enable posting.';
           }
         } catch (error: any) {
           errors.nostr = `Client posting error: ${error.message}`;
@@ -473,18 +476,18 @@ export default function DashboardPage() {
           </div>
           
           {!isLoading && configuredPlatforms.length === 0 && nip07Available && (
-            <div className="text-center p-6 bg-blue-50 border border-blue-200 rounded-xl">
-              <div className="text-blue-800 mb-2">
+            <div className="text-center p-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-xl">
+              <div className="text-blue-800 dark:text-blue-300 mb-2">
                 <span className="text-2xl">🔗</span>
               </div>
-              <h3 className="font-bold text-blue-800 mb-2">NIP-07 Extension Detected</h3>
-              <p className="text-blue-700 mb-4">
+              <h3 className="font-bold text-blue-800 dark:text-blue-300 mb-2">NIP-07 Extension Detected</h3>
+              <p className="text-blue-700 dark:text-blue-200 mb-4">
                 Your Nostr browser extension is available! You can post to Nostr using your extension.
                 Set up additional platforms to post to multiple networks at once.
               </p>
               <Link
                 href="/platform-setup"
-                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition"
+                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 dark:hover:bg-blue-500 transition"
               >
                 Set Up More Platforms
               </Link>
@@ -492,17 +495,17 @@ export default function DashboardPage() {
           )}
           
           {!isLoading && configuredPlatforms.length === 0 && !nip07Available && (
-            <div className="text-center p-6 bg-orange-50 border border-orange-200 rounded-xl">
-              <div className="text-orange-800 mb-2">
+            <div className="text-center p-6 bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 rounded-xl">
+              <div className="text-orange-800 dark:text-orange-300 mb-2">
                 <span className="text-2xl">⚙️</span>
               </div>
-              <h3 className="font-bold text-orange-800 mb-2">No Platforms Configured</h3>
-              <p className="text-orange-700 mb-4">
+              <h3 className="font-bold text-orange-800 dark:text-orange-300 mb-2">No Platforms Configured</h3>
+              <p className="text-orange-700 dark:text-orange-200 mb-4">
                 You need to set up at least one platform before you can post.
               </p>
               <Link
                 href="/platform-setup"
-                className="inline-block bg-orange-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-orange-700 transition"
+                className="inline-block bg-orange-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-orange-700 dark:hover:bg-orange-500 transition"
               >
                 Set Up Platforms
               </Link>

@@ -6,7 +6,7 @@ class DatabaseService {
   private db: Database.Database;
 
   private constructor() {
-    const dbPath = path.join(process.cwd(), 'sessions.db');
+    const dbPath = path.join(process.cwd(), 'db/sessions.db');
     this.db = new Database(dbPath);
     this.initialize();
   }
@@ -19,12 +19,12 @@ class DatabaseService {
   }
 
   private initialize(): void {
-    // Create sessions table
+    // Create sessions table with pubkey column (matching session API)
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId TEXT UNIQUE NOT NULL,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        pubkey TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
@@ -43,41 +43,41 @@ class DatabaseService {
     console.log('Database initialized successfully');
   }
 
-  // Session operations
-  public createSession(userId: string): void {
-    const stmt = this.db.prepare('INSERT OR REPLACE INTO sessions (userId) VALUES (?)');
-    stmt.run(userId);
+  // Session operations - updated to use pubkey
+  public createSession(pubkey: string): void {
+    const stmt = this.db.prepare('INSERT OR REPLACE INTO sessions (pubkey) VALUES (?)');
+    stmt.run(pubkey);
   }
 
-  public getSession(userId: string): any {
-    const stmt = this.db.prepare('SELECT * FROM sessions WHERE userId = ?');
-    return stmt.get(userId);
+  public getSession(pubkey: string): any {
+    const stmt = this.db.prepare('SELECT * FROM sessions WHERE pubkey = ?');
+    return stmt.get(pubkey);
   }
 
-  public deleteSession(userId: string): void {
-    const stmt = this.db.prepare('DELETE FROM sessions WHERE userId = ?');
-    stmt.run(userId);
+  public deleteSession(pubkey: string): void {
+    const stmt = this.db.prepare('DELETE FROM sessions WHERE pubkey = ?');
+    stmt.run(pubkey);
   }
 
-  // Credentials operations
-  public saveCredentials(userId: string, platform: string, encryptedCredentials: string): void {
+  // Credentials operations - using pubkey instead of userId for consistency
+  public saveCredentials(pubkey: string, platform: string, encryptedCredentials: string): void {
     const stmt = this.db.prepare('INSERT OR REPLACE INTO credentials (userId, platform, credentials) VALUES (?, ?, ?)');
-    stmt.run(userId, platform, encryptedCredentials);
+    stmt.run(pubkey, platform, encryptedCredentials);
   }
 
-  public getCredentials(userId: string, platform?: string): any[] {
+  public getCredentials(pubkey: string, platform?: string): any[] {
     if (platform) {
       const stmt = this.db.prepare('SELECT * FROM credentials WHERE userId = ? AND platform = ?');
-      return [stmt.get(userId, platform)].filter(Boolean);
+      return [stmt.get(pubkey, platform)].filter(Boolean);
     } else {
       const stmt = this.db.prepare('SELECT * FROM credentials WHERE userId = ?');
-      return stmt.all(userId);
+      return stmt.all(pubkey);
     }
   }
 
-  public deleteCredentials(userId: string, platform: string): void {
+  public deleteCredentials(pubkey: string, platform: string): void {
     const stmt = this.db.prepare('DELETE FROM credentials WHERE userId = ? AND platform = ?');
-    stmt.run(userId, platform);
+    stmt.run(pubkey, platform);
   }
 
   // Admin operations

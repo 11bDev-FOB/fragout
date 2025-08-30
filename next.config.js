@@ -2,10 +2,8 @@
 const nextConfig = {
   serverExternalPackages: ['better-sqlite3'],
   output: 'standalone',
-  experimental: {
-    // Optimize for Docker
-    outputFileTracingRoot: __dirname,
-  }
+  // Fixed: moved outputFileTracingRoot out of experimental
+  outputFileTracingRoot: __dirname,
 }
 
 module.exports = nextConfig

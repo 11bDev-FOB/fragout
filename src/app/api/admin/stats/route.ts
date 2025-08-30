@@ -3,10 +3,6 @@ import { AuthService, DatabaseService } from '@/services';
 import { AdminService } from '@/services/AdminService';
 import { getErrorLogs, logError } from '@/utils/errorLogger';
 
-// Mock data storage - in production, this would come from your database
-const postHistory = new Map<string, number>(); // date -> post count
-const userHistory = new Map<string, number>(); // date -> new user count
-
 export async function GET(request: NextRequest) {
   try {
     console.log('Admin stats API called');
@@ -41,7 +37,7 @@ export async function GET(request: NextRequest) {
     
     const userIds = new Set(allCredentials.map((cred: any) => cred.userId));
     
-    // Count credentials by platform
+    // Count credentials by platform (real data only)
     const credentialsCount = {
       twitter: allCredentials.filter((c: any) => c.platform === 'twitter').length,
       mastodon: allCredentials.filter((c: any) => c.platform === 'mastodon').length,
@@ -49,17 +45,19 @@ export async function GET(request: NextRequest) {
       nostr: allCredentials.filter((c: any) => c.platform === 'nostr').length
     };
 
-    // Mock platform breakdown (in a real app, you'd track this)
+    // Real platform breakdown - no mock data
+    // Note: In a real app, you'd track actual posts in the database
     const platformBreakdown = {
-      twitter: Math.floor(Math.random() * 1000) + 500,
-      mastodon: Math.floor(Math.random() * 500) + 200,
-      bluesky: Math.floor(Math.random() * 800) + 300,
-      nostr: Math.floor(Math.random() * 300) + 100
+      twitter: 0, // No post tracking implemented yet
+      mastodon: 0,
+      bluesky: 0,
+      nostr: 0
     };
 
     const totalPosts = Object.values(platformBreakdown).reduce((a, b) => a + b, 0);
 
-    // Generate recent activity data (last 7 days)
+    // Real recent activity - no mock data
+    // Since we don't track posts yet, show zeros
     const recentActivity = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
@@ -68,18 +66,41 @@ export async function GET(request: NextRequest) {
       
       recentActivity.push({
         date: dateStr,
-        posts: Math.floor(Math.random() * 50) + 10,
-        newUsers: Math.floor(Math.random() * 5) + 1
+        posts: 0, // No post tracking yet
+        newUsers: 0 // No user tracking by date yet
       });
     }
 
-    // System health (mock data)
+    // Real system health data
     const uptimeMs = process.uptime() * 1000;
     const uptimeHours = Math.floor(uptimeMs / (1000 * 60 * 60));
     const uptimeMins = Math.floor((uptimeMs % (1000 * 60 * 60)) / (1000 * 60));
     
     const memUsed = process.memoryUsage();
     const memoryUsage = `${Math.round(memUsed.heapUsed / 1024 / 1024)}MB / ${Math.round(memUsed.heapTotal / 1024 / 1024)}MB`;
+
+    // Get all sessions for active user count
+    const allSessions = dbService.getAllSessions();
+    
+    // Calculate proper daily active users (sessions created in last 24 hours)
+    const now = new Date();
+    const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    const recentSessions = allSessions.filter((session: any) => {
+      const sessionDate = new Date(session.created_at);
+      return sessionDate >= dayAgo;
+    });
+    
+    // Get unique users from recent sessions
+    const uniqueRecentUsers = new Set(recentSessions.map((session: any) => session.pubkey));
+    
+    // Calculate weekly active users (sessions created in last 7 days)
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const weeklySessions = allSessions.filter((session: any) => {
+      const sessionDate = new Date(session.created_at);
+      return sessionDate >= weekAgo;
+    });
+    const uniqueWeeklyUsers = new Set(weeklySessions.map((session: any) => session.pubkey));
 
     const stats = {
       totalUsers: userIds.size,
@@ -90,23 +111,23 @@ export async function GET(request: NextRequest) {
       systemHealth: {
         uptime: `${uptimeHours}h ${uptimeMins}m`,
         memoryUsage,
-        diskSpace: '45.2GB / 100GB (45%)',
-        activeConnections: Math.floor(Math.random() * 20) + 5
+        diskSpace: 'N/A', // Would need filesystem access to get real disk usage
+        activeConnections: allSessions.length
       },
       userEngagement: {
-        dailyActiveUsers: Math.min(userIds.size, Math.floor(userIds.size * 0.3) + 1),
-        weeklyActiveUsers: Math.min(userIds.size, Math.floor(userIds.size * 0.7) + 1),
-        monthlyActiveUsers: userIds.size,
+        dailyActiveUsers: uniqueRecentUsers.size, // Unique users active in last 24h
+        weeklyActiveUsers: uniqueWeeklyUsers.size, // Unique users active in last 7 days  
+        monthlyActiveUsers: userIds.size, // All users with credentials
         averagePostsPerUser: userIds.size > 0 ? totalPosts / userIds.size : 0
       },
       errorLogs: getErrorLogs().slice(0, 20), // Return last 20 errors
       autoDeleteStats: {
-        usersWithAutoDelete: Math.floor(userIds.size * 0.2),
-        pendingDeletions: Math.floor(Math.random() * 3)
+        usersWithAutoDelete: 0, // No auto-delete tracking implemented yet
+        pendingDeletions: 0
       }
     };
     
-    console.log('Returning stats:', Object.keys(stats));
+    console.log('Returning real stats:', Object.keys(stats));
     return NextResponse.json(stats);
   } catch (error) {
     console.error('Failed to get admin stats:', error);

@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  # Init container to fix volume permissions
+  init-permissions:
+    image: alpine:latest
+    user: "0:0"  # Run as root to fix permissions
+    volumes:
+      - yall_data:/app/data
+      - yall_db:/app/db
+    command: >
+      sh -c "
+        echo 'Fixing volume permissions...' &&
+        chown -R 1001:1001 /app/data /app/db &&
+        chmod -R 755 /app/data /app/db &&
+        echo 'Permissions fixed successfully'
+      "
+    networks:
+      - yall-network
+
+  yall-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+    env_file:
+      - .env.local
+    volumes:
+      - yall_data:/app/data
+      - yall_db:/app/db
+    restart: unless-stopped
+    depends_on:
+      init-permissions:
+        condition: service_completed_successfully
+    # Security configurations
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+    # Allow limited write access for database
+    read_only: false
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+    # Health check
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Internal network only
+    networks:
+      - yall-network
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - caddy_logs:/var/log/caddy
+    restart: unless-stopped
+    depends_on:
+      yall-web:
+        condition: service_healthy
+    # Security configurations
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    networks:
+      - yall-network
+
+volumes:
+  yall_data:
+    driver: local
+  yall_db:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local
+  caddy_logs:
+    driver: local
+
+networks:
+  yall-network:
+    driver: bridge
+    internal: false

@@ -1,0 +1,71 @@
+# Caddyfile for Y'all Web deployment with yall.pleb.one domain
+
+yall.pleb.one {
+    # Reverse proxy to the Next.js app
+    reverse_proxy yall-web:3000
+
+    # Security headers (enhancing the app's built-in security)
+    header {
+        # Prevent clickjacking
+        X-Frame-Options DENY
+        
+        # Prevent MIME type sniffing
+        X-Content-Type-Options nosniff
+        
+        # Enable XSS protection
+        X-XSS-Protection "1; mode=block"
+        
+        # Referrer policy
+        Referrer-Policy strict-origin-when-cross-origin
+        
+        # Permissions policy (restrict dangerous features)
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        
+        # Hide server information
+        -Server
+    }
+
+    # Enable compression
+    encode gzip zstd
+
+    # Logging
+    log {
+        output file /var/log/caddy/access.log
+        format console
+    }
+
+    # Health check endpoint
+    handle /health {
+        respond "OK" 200
+    }
+}
+
+# Redirect HTTP to HTTPS
+http://yall.pleb.one {
+    redir https://yall.pleb.one{uri} permanent
+}
+
+# Fallback for localhost during development/testing
+localhost:80 {
+    reverse_proxy yall-web:3000
+    
+    header {
+        X-Frame-Options DENY
+        X-Content-Type-Options nosniff
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy strict-origin-when-cross-origin
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        -Server
+    }
+    
+    encode gzip zstd
+    
+    log {
+        output file /var/log/caddy/access.log
+        format console
+    }
+    
+    handle /health {
+        respond "OK" 200
+    }
+}

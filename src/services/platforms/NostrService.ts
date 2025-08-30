@@ -1,6 +1,6 @@
 import { BasePlatformService, Platform, TestResult, PostContent, PostResult } from './BasePlatformService';
 import ImageUploadService from '../ImageUploadService';
-import { finalizeEvent, generateSecretKey, getPublicKey, verifyEvent } from 'nostr-tools';
+import { finalizeEvent, generateSecretKey, getPublicKey, verifyEvent, nip19 } from 'nostr-tools';
 import { hexToBytes } from 'nostr-tools/utils';
 import { Relay } from 'nostr-tools/relay';
 
@@ -126,20 +126,41 @@ export class NostrService extends BasePlatformService {
   }
 
   public async post(content: PostContent, credentials: Record<string, string>): Promise<PostResult> {
-    const { pubkey, privateKey, relays, blossom_server, method } = credentials;
+    const { pubkey, private_key, relays, blossom_server, method } = credentials;
 
-    // Get user's relay configuration from settings
-    let userRelays: string[] = relays ? (Array.isArray(relays) ? relays : [relays]) : [];
-    try {
-      const relayResponse = await fetch('/api/settings/relays', {
-        credentials: 'include'
-      });
-      if (relayResponse.ok) {
-        const relayData = await relayResponse.json();
-        userRelays = relayData.relays?.filter((r: any) => r.write)?.map((r: any) => r.url) || userRelays;
+    // Get user's relay configuration - use default relays for now
+    let userRelays: string[] = relays ? (Array.isArray(relays) ? relays : [relays]) : [
+      'wss://relay.damus.io',
+      'wss://nos.lol',
+      'wss://relay.nostr.band'
+    ];
+
+    // Auto-derive pubkey from private key if missing
+    let eventPubkey = pubkey;
+    if (!eventPubkey && private_key && method !== 'nip07') {
+      try {
+        const { getPublicKey } = require('nostr-tools');
+        const { nip19 } = require('nostr-tools');
+        
+        let privateKeyHex = private_key;
+        // If it's an nsec, decode it first
+        if (private_key.startsWith('nsec1')) {
+          const decoded = nip19.decode(private_key);
+          privateKeyHex = Buffer.from(decoded.data as Uint8Array).toString('hex');
+        }
+        
+        // Ensure privateKeyHex is exactly 64 characters (pad with leading zero if needed)
+        privateKeyHex = privateKeyHex.padStart(64, '0');
+
+        eventPubkey = getPublicKey(Buffer.from(privateKeyHex, 'hex'));
+        console.log('Auto-derived pubkey from private key');
+      } catch (error) {
+        console.error('Failed to derive pubkey from private key:', error);
+        return {
+          success: false,
+          error: 'Invalid private key format'
+        };
       }
-    } catch (error) {
-      console.log('Could not fetch user relay settings, using stored relays:', error);
     }
 
     // For NIP-07 method, we don't need a stored pubkey
@@ -150,7 +171,7 @@ export class NostrService extends BasePlatformService {
           error: 'NIP-07 extension not available'
         };
       }
-    } else if (!pubkey) {
+    } else if (!eventPubkey) {
       return {
         success: false,
         error: 'Missing required credential: pubkey'
@@ -168,7 +189,7 @@ export class NostrService extends BasePlatformService {
     try {
       let eventContent = content.text;
       const tags: string[][] = [];
-      let eventPubkey = pubkey;
+      eventPubkey = pubkey;
 
       // Get pubkey from NIP-07 if using that method
       if (method === 'nip07') {
@@ -195,8 +216,8 @@ export class NostrService extends BasePlatformService {
           };
           
           // Add private key if not using NIP-07
-          if (method !== 'nip07' && privateKey) {
-            blossomCredentials.privateKey = privateKey;
+          if (method !== 'nip07' && private_key) {
+            blossomCredentials.private_key = private_key;
           }
           
           for (const imageData of content.images) {
@@ -281,10 +302,18 @@ export class NostrService extends BasePlatformService {
       }
 
       // Server-side signing with private key
-      if (privateKey) {
+      if (private_key) {
         try {
-          const privateKeyBytes = hexToBytes(privateKey);
-          const signedEvent = finalizeEvent(event, privateKeyBytes);
+          // Normalize private key to 64-char hex
+          let signingKeyHex = private_key;
+          if (private_key.startsWith('nsec1')) {
+            const decoded = nip19.decode(private_key);
+            signingKeyHex = Buffer.from(decoded.data as Uint8Array).toString('hex');
+          }
+          signingKeyHex = signingKeyHex.padStart(64, '0');
+          
+          const private_keyBytes = hexToBytes(signingKeyHex);
+          const signedEvent = finalizeEvent(event, private_keyBytes);
           
           // Publish to relays
           if (userRelays && userRelays.length > 0) {

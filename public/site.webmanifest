@@ -1,0 +1,16 @@
+{
+  "name": "Y'all Web",
+  "short_name": "Y'all",
+  "description": "Multi-Platform Social Media Management",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2B2B2B",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -14,7 +14,7 @@ const JWT_SECRET = new TextEncoder().encode(
 
 // Helper to get DB connection
 function getDB() {
-  return new Database('./sessions.db');
+  return new Database('./db/sessions.db');
 }
 
 function isValidNostrPubkey(pubkey: string) {
