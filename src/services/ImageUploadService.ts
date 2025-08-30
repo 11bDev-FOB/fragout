@@ -236,8 +236,37 @@ class ImageUploadService {
       }
     }
 
-    console.log('No NIP-07 available, returning unsigned event');
-    // If no NIP-07, return unsigned event (may not work for most servers)
+    console.log('No NIP-07 available, checking for private key...');
+    
+    // Try server-side signing with private key
+    if (credentials.private_key) {
+      try {
+        console.log('Signing event with private key...');
+        const { finalizeEvent, nip19 } = await import('nostr-tools');
+        const { hexToBytes } = await import('nostr-tools/utils');
+        
+        let privateKeyHex = credentials.private_key;
+        // If it's an nsec, decode it first
+        if (credentials.private_key.startsWith('nsec1')) {
+          const decoded = nip19.decode(credentials.private_key);
+          privateKeyHex = Buffer.from(decoded.data as any).toString('hex');
+        }
+        
+        // Ensure privateKeyHex is exactly 64 characters (pad with leading zero if needed)
+        privateKeyHex = privateKeyHex.padStart(64, '0');
+        
+        const privateKeyBytes = hexToBytes(privateKeyHex);
+        const signedEvent = finalizeEvent(event, privateKeyBytes);
+        console.log('Event signed successfully with private key');
+        return signedEvent;
+      } catch (error) {
+        console.error('Failed to sign auth event with private key:', error);
+        throw new Error('Failed to sign authorization event with private key');
+      }
+    }
+    
+    console.log('No signing method available, returning unsigned event');
+    // If no signing method available, return unsigned event (may not work for most servers)
     return event;
   }
 
