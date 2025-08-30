@@ -22,6 +22,51 @@ class ImageUploadService {
   }
 
   /**
+   * Strip EXIF metadata from image by redrawing on canvas
+   * This removes GPS and other privacy-sensitive metadata
+   */
+  private static async stripEXIFMetadata(imageData: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      try {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            // Create canvas and draw image
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            if (!ctx) {
+              reject(new Error('Could not get canvas context'));
+              return;
+            }
+            
+            // Set canvas size to match image
+            canvas.width = img.width;
+            canvas.height = img.height;
+            
+            // Draw image to canvas (this strips EXIF data)
+            ctx.drawImage(img, 0, 0);
+            
+            // Convert back to data URL with same quality
+            const strippedDataURL = canvas.toDataURL('image/jpeg', 0.9);
+            resolve(strippedDataURL);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        
+        img.onerror = () => {
+          reject(new Error('Failed to load image for EXIF stripping'));
+        };
+        
+        img.src = imageData;
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  /**
    * Upload media to Nostr via Blossom server
    */
   static async uploadToNostrBlossom(
@@ -99,6 +144,11 @@ class ImageUploadService {
     credentials?: any
   ): Promise<{ success: boolean; url?: string; error?: string }> {
     try {
+      // Strip EXIF metadata to avoid privacy issues with GPS data
+      console.log('Stripping EXIF metadata from image...');
+      const strippedImageData = await this.stripEXIFMetadata(imageData);
+      console.log('EXIF metadata stripped successfully');
+      
       console.log('Blossom upload starting with credentials:', {
         hasCredentials: !!credentials,
         blossomServer,
@@ -107,7 +157,7 @@ class ImageUploadService {
         hasPrivateKey: !!credentials?.privateKey
       });
 
-      const blob = this.dataURLToBlob(imageData);
+      const blob = this.dataURLToBlob(strippedImageData);
       
       // Normalize Blossom server URL
       const normalizedServer = blossomServer.endsWith('/') 

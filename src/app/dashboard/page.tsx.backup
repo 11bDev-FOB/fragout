@@ -172,46 +172,6 @@ export default function DashboardPage() {
     });
   }
 
-  // Strip EXIF metadata from image for privacy (removes GPS data, etc.)
-  async function stripEXIFMetadata(file: File): Promise<File> {
-    return new Promise((resolve) => {
-      const img = new Image();
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
-      
-      img.onload = () => {
-        // Set canvas size to match image
-        canvas.width = img.width;
-        canvas.height = img.height;
-        
-        // Draw image to canvas (this strips EXIF data)
-        ctx.drawImage(img, 0, 0);
-        
-        // Convert back to blob with same quality
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const strippedFile = new File([blob], file.name, {
-              type: 'image/jpeg',
-              lastModified: Date.now()
-            });
-            console.log(`EXIF stripped from ${file.name}: ${file.size} -> ${strippedFile.size} bytes`);
-            resolve(strippedFile);
-          } else {
-            console.warn('Failed to strip EXIF, using original file');
-            resolve(file);
-          }
-        }, 'image/jpeg', 0.95);
-      };
-      
-      img.onerror = () => {
-        console.error('Failed to load image for EXIF stripping, using original');
-        resolve(file);
-      };
-      
-      img.src = URL.createObjectURL(file);
-    });
-  }
-
   async function handlePost(e: React.FormEvent) {
     e.preventDefault();
     setStatus('');
@@ -234,15 +194,13 @@ export default function DashboardPage() {
       // Also compress large images for BlueSky compatibility
       const imageData = await Promise.all(
         images.map(async (file) => {
-          // Strip EXIF metadata for privacy (especially important for Nostr/Blossom)
-          let processedFile = await stripEXIFMetadata(file);
-          
           // Check if image is too large for BlueSky (976KB limit)
           const blueskyLimit = 976560; // 976.56KB
+          let processedFile = file;
           
-          if (selected.includes('bluesky') && processedFile.size > blueskyLimit) {
-            console.log(`Compressing image for BlueSky: ${processedFile.size} bytes > ${blueskyLimit} bytes`);
-            processedFile = await compressImageForBlueSky(processedFile, blueskyLimit);
+          if (selected.includes('bluesky') && file.size > blueskyLimit) {
+            console.log(`Compressing image for BlueSky: ${file.size} bytes > ${blueskyLimit} bytes`);
+            processedFile = await compressImageForBlueSky(file, blueskyLimit);
           }
           
           return new Promise<string>((resolve, reject) => {
