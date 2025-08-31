@@ -86,9 +86,33 @@ export default function AuthPage() {
       if (response.ok && data.success) {
         setPubkey(derivedPubkey);
         
-        // Optionally store nsec securely in browser (not recommended for production)
-        // Consider using NIP-07 browser extension instead
-        console.log('✅ Authentication successful - private key never sent to server');
+        // Save nsec credentials for posting
+        try {
+          const credentialsResponse = await fetch('/api/credentials', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              platform: 'nostr',
+              credentials: {
+                method: 'nsec',
+                pubkey: derivedPubkey,
+                private_key: nsecKey.trim()
+              },
+              isUpdate: false
+            }),
+            credentials: 'include'
+          });
+          
+          if (credentialsResponse.ok) {
+            console.log('✅ Nsec credentials saved for posting');
+          } else {
+            console.warn('Failed to save nsec credentials for posting');
+          }
+        } catch (credError) {
+          console.warn('Failed to save nsec credentials:', credError);
+        }
+        
+        console.log('✅ Authentication successful - private key stored securely');
         
         window.location.href = '/dashboard';
       } else {

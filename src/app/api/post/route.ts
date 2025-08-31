@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { AuthService, PostingService } from '@/services';
 
 export async function POST(request: Request) {
+  console.log('🔄 POST /api/post - Request received');
   try {
+    console.log('📥 Parsing request body...');
     const body = await request.json();
     const { message, platforms, images } = body;
     
@@ -11,7 +13,8 @@ export async function POST(request: Request) {
       messageLength: message?.length,
       imageCount: images?.length || 0,
       hasImages: !!(images?.length),
-      nostrSelected: platforms?.includes('nostr')
+      nostrSelected: platforms?.includes('nostr'),
+      bodyKeys: Object.keys(body)
     });
     
     // Log image details if present
@@ -21,9 +24,12 @@ export async function POST(request: Request) {
         sizes: images.map((img: string, i: number) => ({
           index: i,
           dataUrlLength: img.length,
-          mimeType: img.split(',')[0]
+          mimeType: img.split(',')[0],
+          isValidDataUrl: img.startsWith('data:')
         }))
       });
+    } else {
+      console.log('📝 No images in request');
     }
     
     const authService = new AuthService();
@@ -72,7 +78,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ results, errors });
     
   } catch (error: any) {
-    console.error('Post error:', error);
+    console.error('❌ POST /api/post - Error occurred:', error);
+    console.error('❌ Error details:', {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name
+    });
     return NextResponse.json({ 
       error: error.message || 'Failed to process post request' 
     }, { status: 500 });

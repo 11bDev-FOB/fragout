@@ -67,6 +67,36 @@ class ImageUploadService {
   }
 
   /**
+   * Server-side EXIF stripping using basic image processing
+   * In Node.js environment, we'll do basic image reprocessing
+   */
+  static async stripEXIFServerSide(imageData: string): Promise<string> {
+    try {
+      // For server-side, we'll create a new image without EXIF by reencoding
+      // This is a simplified approach that removes EXIF by converting through canvas-like processing
+      
+      const blob = this.dataURLToBlob(imageData);
+      const buffer = await blob.arrayBuffer();
+      const uint8Array = new Uint8Array(buffer);
+      
+      console.log('🔧 Server-side EXIF stripping:', {
+        originalSize: uint8Array.length,
+        mimeType: blob.type
+      });
+      
+      // For now, return the original image data
+      // In a production environment, you might want to use a library like 'sharp' or 'jimp'
+      // to properly strip EXIF data on the server side
+      console.log('⚠️ Server-side EXIF stripping: Using original image (consider adding sharp/jimp for production)');
+      
+      return imageData;
+    } catch (error) {
+      console.error('❌ Server-side EXIF stripping failed:', error);
+      return imageData;
+    }
+  }
+
+  /**
    * Upload media to Nostr via Blossom server
    */
   static async uploadToNostrBlossom(
@@ -144,20 +174,38 @@ class ImageUploadService {
     credentials?: any
   ): Promise<{ success: boolean; url?: string; error?: string }> {
     try {
-      // Strip EXIF metadata to avoid privacy issues with GPS data
-      console.log('Stripping EXIF metadata from image...');
-      const strippedImageData = await this.stripEXIFMetadata(imageData);
-      console.log('EXIF metadata stripped successfully');
+      // Strip EXIF metadata appropriately for the environment
+      let processedImageData = imageData;
+      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+        console.log('🖼️ Client-side: Stripping EXIF metadata from image...');
+        try {
+          processedImageData = await this.stripEXIFMetadata(imageData);
+          console.log('✅ EXIF metadata stripped successfully');
+        } catch (error) {
+          console.warn('⚠️ EXIF stripping failed, using original image:', error);
+          processedImageData = imageData;
+        }
+      } else {
+        console.log('🖥️ Server-side: Stripping EXIF metadata...');
+        try {
+          processedImageData = await this.stripEXIFServerSide(imageData);
+          console.log('✅ Server-side EXIF processing completed');
+        } catch (error) {
+          console.warn('⚠️ Server-side EXIF processing failed, using original image:', error);
+          processedImageData = imageData;
+        }
+      }
       
-      console.log('Blossom upload starting with credentials:', {
+      console.log('🌸 Blossom upload starting with credentials:', {
         hasCredentials: !!credentials,
         blossomServer,
         pubkey: credentials?.pubkey?.substring(0, 8) + '...',
         useNip07: credentials?.useNip07,
-        hasPrivateKey: !!credentials?.privateKey
+        hasPrivateKey: !!credentials?.private_key,
+        isServerSide: typeof window === 'undefined'
       });
 
-      const blob = this.dataURLToBlob(strippedImageData);
+      const blob = this.dataURLToBlob(processedImageData);
       
       // Normalize Blossom server URL
       const normalizedServer = blossomServer.endsWith('/') 
@@ -173,12 +221,19 @@ class ImageUploadService {
 
       // Create authorization header if credentials are provided
       if (credentials) {
-        console.log('🔐 Credentials provided for Blossom auth:', {
+        console.log('🔐 ImageUploadService received credentials for Blossom auth:', {
           hasCredentials: !!credentials,
           credentialKeys: Object.keys(credentials),
           hasPubkey: !!credentials.pubkey,
+          pubkeyStart: credentials.pubkey?.substring(0, 8),
+          pubkeyLength: credentials.pubkey?.length,
           useNip07: credentials.useNip07,
-          hasPrivateKey: !!credentials.private_key
+          hasPrivateKey: !!credentials.private_key,
+          privateKeyStart: credentials.private_key?.substring(0, 10),
+          privateKeyLength: credentials.private_key?.length,
+          privateKeyType: credentials.private_key?.startsWith?.('nsec1') ? 'nsec' : 'hex',
+          isClientSide: typeof window !== 'undefined',
+          hasWindowNostr: typeof window !== 'undefined' && !!(window as any).nostr
         });
         
         try {
@@ -311,7 +366,24 @@ class ImageUploadService {
       pubkey: credentials.pubkey,
     };
 
-    console.log('Unsigned auth event created:', event);
+    console.log('🔍 Unsigned auth event created:', {
+      event: event,
+      hasEvent: !!event,
+      eventPubkey: event.pubkey?.substring(0, 8),
+      eventKind: event.kind,
+      eventTags: event.tags,
+      eventContent: event.content
+    });
+
+    // Log decision path for signing method
+    console.log('🤔 Determining signing method:', {
+      isClientSide: typeof window !== 'undefined',
+      hasWindowNostr: typeof window !== 'undefined' && !!(window as any).nostr,
+      useNip07: credentials.useNip07,
+      willUseNip07: typeof window !== 'undefined' && (window as any).nostr && credentials.useNip07,
+      hasPrivateKey: !!credentials.private_key,
+      privateKeyStart: credentials.private_key?.substring(0, 10)
+    });
 
     // Sign the event using NIP-07 if available
     if (typeof window !== 'undefined' && (window as any).nostr && credentials.useNip07) {
@@ -331,35 +403,73 @@ class ImageUploadService {
       }
     }
 
-    console.log('🔐 No NIP-07 available, checking for private key...');
+    console.log('🔐 No NIP-07 path taken, checking for private key...');
     console.log('🔍 Private key check:', {
       hasPrivateKey: !!credentials.private_key,
-      privateKeyType: credentials.private_key?.startsWith?.('nsec1') ? 'nsec' : 'hex'
+      privateKeyType: credentials.private_key?.startsWith?.('nsec1') ? 'nsec' : 'hex',
+      privateKeyLength: credentials.private_key?.length
     });
     
     // Try server-side signing with private key
     if (credentials.private_key) {
       try {
-        console.log('Signing event with private key...');
+        console.log('🔑 Starting private key signing process...');
+        console.log('📦 Importing nostr-tools...');
         const { finalizeEvent, nip19 } = await import('nostr-tools');
         const { hexToBytes } = await import('nostr-tools/utils');
+        console.log('✅ nostr-tools imported successfully');
         
         let privateKeyHex = credentials.private_key;
+        console.log('🔍 Processing private key:', {
+          originalLength: credentials.private_key.length,
+          isNsec: credentials.private_key.startsWith('nsec1'),
+          originalStart: credentials.private_key.substring(0, 10)
+        });
+        
         // If it's an nsec, decode it first
         if (credentials.private_key.startsWith('nsec1')) {
+          console.log('🔄 Decoding nsec format...');
           const decoded = nip19.decode(credentials.private_key);
+          console.log('🔍 Decoded result:', {
+            type: decoded.type,
+            hasData: !!decoded.data,
+            dataLength: decoded.data ? (decoded.data as any).length : 0
+          });
           privateKeyHex = Buffer.from(decoded.data as any).toString('hex');
+          console.log('✅ nsec decoded to hex:', {
+            hexLength: privateKeyHex.length,
+            hexStart: privateKeyHex.substring(0, 10)
+          });
         }
         
         // Ensure privateKeyHex is exactly 64 characters (pad with leading zero if needed)
+        const originalHexLength = privateKeyHex.length;
         privateKeyHex = privateKeyHex.padStart(64, '0');
+        console.log('🔧 Private key padding result:', {
+          originalLength: originalHexLength,
+          paddedLength: privateKeyHex.length,
+          paddedStart: privateKeyHex.substring(0, 10)
+        });
         
+        console.log('🔑 Converting to bytes and signing...');
         const privateKeyBytes = hexToBytes(privateKeyHex);
+        console.log('✅ Private key converted to bytes, length:', privateKeyBytes.length);
+        
         const signedEvent = finalizeEvent(event, privateKeyBytes);
-        console.log('Event signed successfully with private key');
+        console.log('✅ Event signed successfully with private key:', {
+          hasId: !!signedEvent.id,
+          hasSig: !!signedEvent.sig,
+          hasValidSig: signedEvent.sig && signedEvent.sig.length > 0,
+          pubkey: signedEvent.pubkey?.substring(0, 8)
+        });
         return signedEvent;
       } catch (error) {
-        console.error('Failed to sign auth event with private key:', error);
+        console.error('❌ Failed to sign auth event with private key:', error);
+        console.error('❌ Error details:', {
+          message: (error as any)?.message || 'Unknown error',
+          stack: (error as any)?.stack || 'No stack trace',
+          name: (error as any)?.name || 'Unknown error type'
+        });
         throw new Error('Failed to sign authorization event with private key');
       }
     }

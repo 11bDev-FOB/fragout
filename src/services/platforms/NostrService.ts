@@ -128,6 +128,22 @@ export class NostrService extends BasePlatformService {
   public async post(content: PostContent, credentials: Record<string, string>): Promise<PostResult> {
     const { pubkey, private_key, relays, blossom_server, method } = credentials;
 
+    // PWA Debug: Log all credentials and environment info
+    console.log('🔍 NostrService.post() DEBUG - PWA Environment Check:', {
+      isPWA: typeof window !== 'undefined' && window.matchMedia('(display-mode: standalone)').matches,
+      isWebApp: typeof window !== 'undefined' && (window.navigator as any).standalone === true,
+      userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'server',
+      hasWindowNostr: typeof window !== 'undefined' && !!(window as any).nostr,
+      method: method,
+      methodType: typeof method,
+      hasPubkey: !!pubkey,
+      hasPrivateKey: !!private_key,
+      privateKeyType: private_key?.startsWith?.('nsec1') ? 'nsec' : private_key ? 'hex' : 'none',
+      blossomServer: blossom_server,
+      credentialKeys: Object.keys(credentials),
+      allCredentials: credentials
+    });
+
     // Get user's relay configuration - use default relays for now
     let userRelays: string[] = relays ? (Array.isArray(relays) ? relays : [relays]) : [
       'wss://relay.damus.io',
@@ -189,7 +205,7 @@ export class NostrService extends BasePlatformService {
     try {
       let eventContent = content.text;
       const tags: string[][] = [];
-      eventPubkey = pubkey;
+      // Note: eventPubkey already set above (either from pubkey or auto-derived from private_key)
 
       // Get pubkey from NIP-07 if using that method
       if (method === 'nip07') {
@@ -210,7 +226,11 @@ export class NostrService extends BasePlatformService {
           blossomServer: blossom_server,
           method: method,
           hasEventPubkey: !!eventPubkey,
-          hasPrivateKey: !!private_key
+          eventPubkeyStart: eventPubkey?.substring(0, 8),
+          hasPrivateKey: !!private_key,
+          privateKeyType: private_key?.startsWith?.('nsec1') ? 'nsec' : 'hex',
+          isClientSide: typeof window !== 'undefined',
+          hasWindowNostr: typeof window !== 'undefined' && !!(window as any).nostr
         });
 
         try {
@@ -219,9 +239,16 @@ export class NostrService extends BasePlatformService {
           // Prepare credentials for Blossom upload
           const blossomCredentials: any = {
             pubkey: eventPubkey,
-            blossomServer: blossom_server,
             useNip07: method === 'nip07'
           };
+          
+          console.log('🔧 Method determination:', {
+            method: method,
+            methodType: typeof method,
+            isNip07: method === 'nip07',
+            isNotNip07: method !== 'nip07',
+            hasPrivateKey: !!private_key
+          });
           
           // Add private key if not using NIP-07
           if (method !== 'nip07' && private_key) {
@@ -232,6 +259,20 @@ export class NostrService extends BasePlatformService {
           } else {
             console.log('⚠️ No private key or NIP-07 available for Blossom signing');
           }
+          
+          console.log('🔍 Final Blossom credentials debug:', {
+            hasPubkey: !!blossomCredentials.pubkey,
+            pubkeyStart: blossomCredentials.pubkey?.substring(0, 8),
+            pubkeyLength: blossomCredentials.pubkey?.length,
+            hasPrivateKey: !!blossomCredentials.private_key,
+            privateKeyStart: blossomCredentials.private_key?.substring(0, 10),
+            privateKeyLength: blossomCredentials.private_key?.length,
+            privateKeyType: blossomCredentials.private_key?.startsWith?.('nsec1') ? 'nsec' : 'hex',
+            useNip07: blossomCredentials.useNip07,
+            method: method,
+            blossomServer: blossom_server,
+            credentialKeys: Object.keys(blossomCredentials)
+          });
           
           console.log('📤 Uploading images to Blossom server...');
           for (let i = 0; i < content.images.length; i++) {
@@ -293,7 +334,7 @@ export class NostrService extends BasePlatformService {
       };
 
       // Handle signing based on method
-      if (method === 'nip07' || (typeof window !== 'undefined' && (window as any).nostr)) {
+      if (method === 'nip07') {
         try {
           const signedEvent = await (window as any).nostr.signEvent(event);
           
