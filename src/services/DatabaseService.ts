@@ -40,6 +40,21 @@ class DatabaseService {
       )
     `);
 
+    // Create posts table for tracking platform usage
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        userId TEXT NOT NULL,
+        platform TEXT NOT NULL,
+        postId TEXT,
+        success INTEGER NOT NULL,
+        content_length INTEGER,
+        has_images INTEGER DEFAULT 0,
+        error_message TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     console.log('Database initialized successfully');
   }
 
@@ -88,6 +103,63 @@ class DatabaseService {
 
   public getAllSessions(): any[] {
     const stmt = this.db.prepare('SELECT * FROM sessions');
+    return stmt.all();
+  }
+
+  // Post tracking operations
+  public recordPost(userId: string, platform: string, success: boolean, postId?: string, contentLength?: number, hasImages?: boolean, errorMessage?: string): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO posts (userId, platform, postId, success, content_length, has_images, error_message) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    stmt.run(userId, platform, postId || null, success ? 1 : 0, contentLength || null, hasImages ? 1 : 0, errorMessage || null);
+  }
+
+  public getPostStats(): any {
+    console.log('📊 DatabaseService.getPostStats() called');
+    
+    // Total posts by platform
+    console.log('📊 Querying platform stats...');
+    const platformStats = this.db.prepare(`
+      SELECT platform, 
+             COUNT(*) as total,
+             SUM(success) as successful,
+             COUNT(*) - SUM(success) as failed
+      FROM posts 
+      GROUP BY platform
+    `).all();
+    console.log('📊 Platform stats result:', platformStats);
+
+    // Recent activity (last 7 days)
+    console.log('📊 Querying recent activity...');
+    const recentActivity = this.db.prepare(`
+      SELECT DATE(created_at) as date,
+             COUNT(*) as posts,
+             COUNT(DISTINCT userId) as active_users
+      FROM posts 
+      WHERE created_at >= datetime('now', '-7 days')
+      GROUP BY DATE(created_at)
+      ORDER BY date DESC
+    `).all();
+    console.log('📊 Recent activity result:', recentActivity);
+
+    // Total posts
+    console.log('📊 Querying total posts...');
+    const totalPosts = this.db.prepare('SELECT COUNT(*) as count FROM posts WHERE success = 1').get() as { count: number };
+    console.log('📊 Total posts result:', totalPosts);
+
+    const result = {
+      platformStats,
+      recentActivity,
+      totalPosts: totalPosts.count
+    };
+    
+    console.log('📊 Final getPostStats result:', result);
+    return result;
+  }
+
+  public getAllPosts(): any[] {
+    const stmt = this.db.prepare('SELECT * FROM posts ORDER BY created_at DESC');
     return stmt.all();
   }
 

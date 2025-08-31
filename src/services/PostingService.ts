@@ -135,12 +135,35 @@ class PostingService {
           });
           job.results[platformId] = result;
 
+          // Record post in database for admin stats
+          this.db.recordPost(
+            job.userId,
+            platformId,
+            result.success,
+            result.postId,
+            job.content.text?.length || 0,
+            !!(job.content.images && job.content.images.length > 0),
+            result.error
+          );
+
         } catch (error: any) {
           console.error(`Error posting to ${platformId}:`, error);
-          job.results[platformId] = {
+          const errorResult = {
             success: false,
             error: error.message
           };
+          job.results[platformId] = errorResult;
+
+          // Record failed post in database
+          this.db.recordPost(
+            job.userId,
+            platformId,
+            false,
+            undefined,
+            job.content.text?.length || 0,
+            !!(job.content.images && job.content.images.length > 0),
+            error.message
+          );
         }
       }
 

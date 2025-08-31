@@ -1,5 +1,11 @@
-# Caddyfile for Y'all Web deployment with yall.pleb.one domain
+# Caddyfile for Multi-Service Deployment with pleb.one subdomains
+# See CADDY_ROUTING_PLAN.md for full documentation
 
+# =============================================================================
+# ACTIVE SERVICES
+# =============================================================================
+
+# Main Y'all Web Application
 yall.pleb.one {
     # Reverse proxy to the Next.js app
     reverse_proxy yall-web:3000
@@ -30,20 +36,91 @@ yall.pleb.one {
 
     # Logging
     log {
-        output file /var/log/caddy/access.log
+        output file /var/log/caddy/yall-web-access.log
         format console
     }
 
     # Health check endpoint
     handle /health {
-        respond "OK" 200
+        respond "Y'all Web OK" 200
     }
 }
 
-# Redirect HTTP to HTTPS
+# =============================================================================
+# PLANNED SERVICES (Uncomment and configure when ready to deploy)
+# =============================================================================
+
+# Service 1 - Replace 'service1' with actual service name
+# service1.pleb.one {
+#     reverse_proxy service1:PORT
+#     
+#     header {
+#         X-Frame-Options DENY
+#         X-Content-Type-Options nosniff
+#         X-XSS-Protection "1; mode=block"
+#         Referrer-Policy strict-origin-when-cross-origin
+#         Permissions-Policy "geolocation=(), microphone=(), camera=()"
+#         -Server
+#     }
+#     
+#     encode gzip zstd
+#     
+#     log {
+#         output file /var/log/caddy/service1-access.log
+#         format console
+#     }
+#     
+#     handle /health {
+#         respond "Service1 OK" 200
+#     }
+# }
+
+# Service 2 - Replace 'service2' with actual service name  
+# service2.pleb.one {
+#     reverse_proxy service2:PORT
+#     
+#     header {
+#         X-Frame-Options DENY
+#         X-Content-Type-Options nosniff
+#         X-XSS-Protection "1; mode=block"
+#         Referrer-Policy strict-origin-when-cross-origin
+#         Permissions-Policy "geolocation=(), microphone=(), camera=()"
+#         -Server
+#     }
+#     
+#     encode gzip zstd
+#     
+#     log {
+#         output file /var/log/caddy/service2-access.log
+#         format console
+#     }
+#     
+#     handle /health {
+#         respond "Service2 OK" 200
+#     }
+# }
+
+# =============================================================================
+# HTTP REDIRECTS
+# =============================================================================
+
+# Redirect HTTP to HTTPS for main domain
 http://yall.pleb.one {
     redir https://yall.pleb.one{uri} permanent
 }
+
+# Add HTTP redirects for new services here:
+# http://service1.pleb.one {
+#     redir https://service1.pleb.one{uri} permanent
+# }
+
+# http://service2.pleb.one {
+#     redir https://service2.pleb.one{uri} permanent
+# }
+
+# =============================================================================
+# DEVELOPMENT/TESTING
+# =============================================================================
 
 # Fallback for localhost during development/testing
 localhost:80 {

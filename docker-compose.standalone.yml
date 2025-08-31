@@ -1,14 +1,8 @@
 version: '3.8'
 
-# Y'all Web Production Configuration
-# 
-# Two deployment modes:
-# 1. Standalone (default): Uses external pleb-services network with shared Caddy
-# 2. Legacy: Uses embedded Caddy (set EMBEDDED_CADDY=true)
-#
-# Usage:
-#   Standalone: docker-compose -f docker-compose.prod.yml up -d
-#   Legacy:     EMBEDDED_CADDY=true docker-compose -f docker-compose.prod.yml up -d
+# Y'all Web Service - Social Media Posting Application
+# This service connects to the shared infrastructure network
+# Caddy proxy routes yall.pleb.one traffic to this service
 
 services:
   # Init container to fix volume permissions
@@ -68,45 +62,14 @@ services:
       retries: 3
       start_period: 40s
 
-  # Legacy embedded Caddy (only if EMBEDDED_CADDY=true)
-  caddy:
-    image: caddy:2-alpine
-    profiles: ["embedded"]
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-      - caddy_logs:/var/log/caddy
-    restart: unless-stopped
-    depends_on:
-      yall-web:
-        condition: service_healthy
-    # Security configurations
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_BIND_SERVICE
-
 volumes:
   yall_data:
     driver: local
   yall_db:
     driver: local
-  caddy_data:
-    driver: local
-  caddy_config:
-    driver: local
-  caddy_logs:
-    driver: local
 
-# Network configuration
+# Connect to shared infrastructure network
 networks:
   default:
-    # Use external network if available, otherwise create local
-    name: ${NETWORK_NAME:-pleb-services}
-    external: ${EXTERNAL_NETWORK:-true}
+    name: pleb-services
+    external: true

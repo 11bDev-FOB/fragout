@@ -2,6 +2,65 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AuthService, DatabaseService } from '@/services';
 import { AdminService } from '@/services/AdminService';
 import { getErrorLogs, logError } from '@/utils/errorLogger';
+import { promisify } from 'util';
+import { exec } from 'child_process';
+import fs from 'fs';
+
+const execAsync = promisify(exec);
+
+// Function to get disk space information
+async function getDiskSpace(): Promise<string> {
+  try {
+    // Try different methods to get disk space
+    
+    // Method 1: Use df command (most reliable in Docker containers)
+    try {
+      const { stdout } = await execAsync('df -h /app 2>/dev/null || df -h / 2>/dev/null');
+      const lines = stdout.trim().split('\n');
+      if (lines.length > 1) {
+        const parts = lines[1].split(/\s+/);
+        if (parts.length >= 4) {
+          const total = parts[1];
+          const used = parts[2];
+          const available = parts[3];
+          const usedPercent = parts[4];
+          return `${used}/${total} (${available} free, ${usedPercent} used)`;
+        }
+      }
+    } catch (dfError) {
+      console.log('df command failed, trying statvfs approach...');
+    }
+
+    // Method 2: Use Node.js fs.statSync for basic info
+    try {
+      const stats = fs.statSync('/app');
+      if (stats) {
+        // Try to get filesystem info using /proc/mounts
+        const mountInfo = fs.readFileSync('/proc/mounts', 'utf8');
+        const appMount = mountInfo.split('\n').find(line => line.includes('/app') || line.includes('/'));
+        if (appMount) {
+          return 'Available (container filesystem)';
+        }
+      }
+    } catch (fsError) {
+      console.log('fs.statSync failed, using fallback...');
+    }
+
+    // Method 3: Check available space using a simple approach
+    try {
+      const { stdout } = await execAsync('du -sh /app 2>/dev/null');
+      const appSize = stdout.trim().split('\t')[0];
+      return `App: ${appSize} (container space)`;
+    } catch (duError) {
+      console.log('du command failed...');
+    }
+
+    return 'Container filesystem';
+  } catch (error) {
+    console.error('Error getting disk space:', error);
+    return 'Unable to determine';
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,39 +104,73 @@ export async function GET(request: NextRequest) {
       nostr: allCredentials.filter((c: any) => c.platform === 'nostr').length
     };
 
-    // Real platform breakdown - no mock data
-    // Note: In a real app, you'd track actual posts in the database
+    console.log('� CREDENTIALS COUNT CALCULATED:', credentialsCount);
+    console.log('�💡 About to call dbService.getPostStats()...');
+    
+    // Get real post statistics from database
+    console.log('Getting post statistics...');
+    let postStats;
+    try {
+      postStats = dbService.getPostStats();
+      console.log('Post stats result:', JSON.stringify(postStats, null, 2));
+    } catch (error) {
+      console.error('Error getting post stats:', error);
+      // Fallback to empty stats
+      postStats = {
+        platformStats: [],
+        recentActivity: [],
+        totalPosts: 0
+      };
+      console.log('Using fallback empty post stats');
+    }
+    
+    // Build platform breakdown from real data
     const platformBreakdown = {
-      twitter: 0, // No post tracking implemented yet
+      twitter: 0,
       mastodon: 0,
       bluesky: 0,
       nostr: 0
     };
+    
+    // Update with actual data from database
+    postStats.platformStats.forEach((stat: any) => {
+      if (platformBreakdown.hasOwnProperty(stat.platform)) {
+        platformBreakdown[stat.platform as keyof typeof platformBreakdown] = stat.successful || 0;
+      }
+    });
 
-    const totalPosts = Object.values(platformBreakdown).reduce((a, b) => a + b, 0);
+    const totalPosts = postStats.totalPosts || 0;
 
-    // Real recent activity - no mock data
-    // Since we don't track posts yet, show zeros
+    // Build recent activity from real data (last 7 days)
     const recentActivity = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
       
+      // Find data for this date from database
+      const dayData = postStats.recentActivity.find((activity: any) => activity.date === dateStr);
+      
       recentActivity.push({
         date: dateStr,
-        posts: 0, // No post tracking yet
-        newUsers: 0 // No user tracking by date yet
+        posts: dayData ? dayData.posts : 0,
+        newUsers: dayData ? dayData.active_users : 0
       });
     }
 
     // Real system health data
+    console.log('🔍 Getting system health data...');
     const uptimeMs = process.uptime() * 1000;
     const uptimeHours = Math.floor(uptimeMs / (1000 * 60 * 60));
     const uptimeMins = Math.floor((uptimeMs % (1000 * 60 * 60)) / (1000 * 60));
     
     const memUsed = process.memoryUsage();
     const memoryUsage = `${Math.round(memUsed.heapUsed / 1024 / 1024)}MB / ${Math.round(memUsed.heapTotal / 1024 / 1024)}MB`;
+
+    // Get real disk space information
+    console.log('💾 Getting disk space information...');
+    const diskSpace = await getDiskSpace();
+    console.log('💾 Disk space result:', diskSpace);
 
     // Get all sessions for active user count
     const allSessions = dbService.getAllSessions();
@@ -111,7 +204,7 @@ export async function GET(request: NextRequest) {
       systemHealth: {
         uptime: `${uptimeHours}h ${uptimeMins}m`,
         memoryUsage,
-        diskSpace: 'N/A', // Would need filesystem access to get real disk usage
+        diskSpace: diskSpace, // Real disk space information
         activeConnections: allSessions.length
       },
       userEngagement: {
