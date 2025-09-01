@@ -1,4 +1,14 @@
-# Y'all Web
+
+# Yall Web
+
+**Yall Web** is a free, open-source platform for posting to multiple social networks from a single dashboard. It features real-time admin statistics, robust post tracking, system health monitoring, and a snarky legal disclaimer. Built with Next.js, SQLite, and Docker for easy deployment.
+
+- **Multi-platform posting:** Bluesky, Mastodon, Nostr, Twitter, and more
+- **Admin dashboard:** Real usage stats, post counts, and system health
+- **Privacy-first:** No tracking, no ads, no nonsense
+- **Open-source:** MIT licensed, contributions welcome!
+
+---
 
 > 🚀 **Multi-platform social media management tool** - Post to Twitter/X, Mastodon, BlueSky, and Nostr from one interface.
 
