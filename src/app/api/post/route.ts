@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { AuthService, PostingService } from '@/services';
+import { updateUserActivity } from '@/utils/autoDelete';
 
 export async function POST(request: Request) {
   console.log('🔄 POST /api/post - Request received');
@@ -40,6 +41,9 @@ export async function POST(request: Request) {
     }
 
     console.log('✅ User authenticated:', userId);
+
+    // Update user activity for auto-delete tracking
+    updateUserActivity(userId);
 
     if (!message || !message.trim()) {
       console.log('❌ Empty message provided');

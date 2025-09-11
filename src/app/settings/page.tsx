@@ -353,7 +353,7 @@ export default function SettingsPage() {
               <h3 className="font-bold text-yellow-800 dark:text-yellow-300">Auto-delete after 30 days of inactivity</h3>
               <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">
                 {autoDeleteEnabled 
-                  ? 'Your account data will be automatically deleted if unused for 30 days'
+                  ? 'Your platform credentials, post history, and account data will be automatically deleted if unused for 30 days'
                   : 'Your account data will be kept indefinitely (you can delete it manually below)'
                 }
               </p>

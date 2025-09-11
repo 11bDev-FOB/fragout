@@ -1,4 +1,6 @@
 // Auto-delete utility
+import DatabaseService from '@/services/DatabaseService';
+
 const userAutoDeleteSettings = new Map();
 const userLastActivity = new Map();
 
@@ -11,14 +13,28 @@ export function cleanupInactiveUsers() {
     const autoDeleteEnabled = userAutoDeleteSettings.get(userId);
     
     if (autoDeleteEnabled && lastActivity < thirtyDaysAgo) {
-      console.log(`Auto-deleting inactive user: ${userId}`);
-      // Clean up user data
-      userAutoDeleteSettings.delete(userId);
-      userLastActivity.delete(userId);
-      // Here you would also delete from the main database
-      // DatabaseService.getInstance().deleteUser(userId);
+      console.log(`🗑️ Auto-deleting inactive user: ${userId}`);
+      
+      try {
+        // Delete all user data from the database
+        const dbService = DatabaseService.getInstance();
+        dbService.deleteUser(userId);
+        
+        // Clean up in-memory maps
+        userAutoDeleteSettings.delete(userId);
+        userLastActivity.delete(userId);
+        
+        console.log(`✅ Successfully auto-deleted user: ${userId}`);
+      } catch (error) {
+        console.error(`❌ Failed to auto-delete user ${userId}:`, error);
+      }
     }
   }
+}
+
+// Update user activity (call this when user performs actions)
+export function updateUserActivity(userId: string) {
+  userLastActivity.set(userId, new Date());
 }
 
 // Export the maps so the route can access them

@@ -223,6 +223,40 @@ export default function HelpPage() {
           </p>
         </div>
 
+        {/* Privacy Policy Warning */}
+        <div className="mb-8 bg-red-50 dark:bg-red-900/30 rounded-xl shadow-lg p-6 border border-red-200 dark:border-red-700">
+          <h2 className="text-2xl font-bold text-red-800 dark:text-red-300 mb-4 text-center">
+            🛡️ Important Privacy Information
+          </h2>
+          <div className="space-y-4 text-red-800 dark:text-red-300">
+            <div className="bg-red-100 dark:bg-red-800/50 p-4 rounded-lg">
+              <h3 className="font-bold mb-2">⏰ Auto-Delete Policy</h3>
+              <p className="text-sm">
+                <strong>Your account and all data will be automatically deleted after 30 days of inactivity.</strong> 
+                This includes platform credentials, post history, and user accounts. This policy protects your privacy 
+                but means there is no recovery if you lose access.
+              </p>
+            </div>
+            <div className="bg-red-100 dark:bg-red-800/50 p-4 rounded-lg">
+              <h3 className="font-bold mb-2">🔒 No Recovery Available</h3>
+              <p className="text-sm">
+                We don't store email addresses or any contact information. If you forget your credentials, 
+                there is no way to recover your account. This is intentional for privacy protection.
+              </p>
+            </div>
+            <div className="bg-red-100 dark:bg-red-800/50 p-4 rounded-lg">
+              <h3 className="font-bold mb-2">⚙️ You Can Disable Auto-Delete</h3>
+              <p className="text-sm">
+                After logging in, you can disable the auto-delete feature in your{' '}
+                <Link href="/settings" className="underline font-semibold hover:text-red-600 dark:hover:text-red-400">
+                  Settings page
+                </Link>
+                . However, we recommend keeping it enabled for maximum privacy protection.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Quick Overview */}
         <div className="mb-12 bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4 text-center">🚀 Quick Overview</h2>

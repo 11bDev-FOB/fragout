@@ -410,7 +410,18 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-200 via-purple-100 to-pink-100 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900">
       <Navigation currentPage="dashboard" />
-      <section className="max-w-2xl mx-auto mt-12 bg-white/90 dark:bg-gray-800/90 rounded-2xl shadow-2xl p-10 border border-purple-200 dark:border-gray-700">
+      
+      {/* Auto-Delete Policy Notice */}
+      <div className="max-w-2xl mx-auto mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+        <p className="text-sm text-blue-800 dark:text-blue-300 text-center">
+          💡 <strong>Reminder:</strong> Your account will be automatically deleted after 30 days of inactivity. 
+          <Link href="/settings" className="underline hover:text-blue-600 dark:hover:text-blue-400 ml-1">
+            Disable in Settings
+          </Link>
+        </p>
+      </div>
+      
+      <section className="max-w-2xl mx-auto mt-6 bg-white/90 dark:bg-gray-800/90 rounded-2xl shadow-2xl p-10 border border-purple-200 dark:border-gray-700">
         <h1 className="text-3xl font-extrabold mb-6 text-center text-purple-700 dark:text-purple-400 drop-shadow">Compose Post</h1>
         <form onSubmit={handlePost} className="space-y-6">
           <textarea

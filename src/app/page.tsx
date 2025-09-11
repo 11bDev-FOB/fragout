@@ -9,6 +9,15 @@ export default function Home() {
       
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="max-w-2xl w-full bg-white/90 dark:bg-gray-800/90 rounded-2xl shadow-2xl p-10 text-center border border-purple-200 dark:border-gray-700">
+        
+        {/* Privacy Policy Notice */}
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+          <p className="text-sm text-blue-800 dark:text-blue-300">
+            🛡️ <strong>Privacy-First Policy:</strong> Accounts are automatically deleted after 30 days of inactivity to protect your privacy. 
+            No emails stored, no recovery possible. You can disable auto-delete in Settings after signing up.
+          </p>
+        </div>
+        
         <h1 className="text-5xl font-extrabold mb-6 text-purple-700 dark:text-purple-400 drop-shadow">Yall Web 🗣️</h1>
         <p className="text-xl mb-8 text-gray-700 dark:text-gray-300 font-medium">
           Post to Mastodon, Bluesky, Nostr, and X from one place.<br />

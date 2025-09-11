@@ -55,6 +55,58 @@ class DatabaseService {
       )
     `);
 
+    // Create users table for username/password authentication
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        user_id TEXT UNIQUE NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_login DATETIME,
+        failed_attempts INTEGER DEFAULT 0,
+        locked_until DATETIME
+      )
+    `);
+
+    // Create user_sessions table for enhanced session management
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS user_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id TEXT UNIQUE NOT NULL,
+        user_id TEXT NOT NULL,
+        auth_type TEXT NOT NULL, -- 'nostr' or 'username'
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        expires_at DATETIME NOT NULL,
+        last_activity DATETIME DEFAULT CURRENT_TIMESTAMP,
+        ip_address TEXT,
+        user_agent TEXT
+      )
+    `);
+
+    // Create user_2fa table for two-factor authentication
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS user_2fa (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT UNIQUE NOT NULL,
+        secret TEXT NOT NULL,
+        backup_codes TEXT, -- JSON array of backup codes
+        enabled INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create auth_attempts table for rate limiting
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS auth_attempts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        identifier TEXT NOT NULL, -- IP or username
+        attempt_type TEXT NOT NULL, -- 'login', '2fa'
+        success INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     console.log('Database initialized successfully');
   }
 
@@ -161,6 +213,178 @@ class DatabaseService {
   public getAllPosts(): any[] {
     const stmt = this.db.prepare('SELECT * FROM posts ORDER BY created_at DESC');
     return stmt.all();
+  }
+
+  // Username/Password User Management
+  public createUser(username: string, passwordHash: string, userId: string): void {
+    const stmt = this.db.prepare('INSERT INTO users (username, password_hash, user_id) VALUES (?, ?, ?)');
+    stmt.run(username, passwordHash, userId);
+  }
+
+  public getUserByUsername(username: string): any {
+    const stmt = this.db.prepare('SELECT * FROM users WHERE username = ?');
+    return stmt.get(username);
+  }
+
+  public getUserById(userId: string): any {
+    const stmt = this.db.prepare('SELECT * FROM users WHERE user_id = ?');
+    return stmt.get(userId);
+  }
+
+  public updateUserLastLogin(userId: string): void {
+    const stmt = this.db.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP, failed_attempts = 0 WHERE user_id = ?');
+    stmt.run(userId);
+  }
+
+  public incrementFailedAttempts(username: string): void {
+    const stmt = this.db.prepare('UPDATE users SET failed_attempts = failed_attempts + 1 WHERE username = ?');
+    stmt.run(username);
+  }
+
+  public lockUser(username: string, lockDurationMinutes: number = 15): void {
+    const stmt = this.db.prepare('UPDATE users SET locked_until = datetime(\'now\', \'+\' || ? || \' minutes\') WHERE username = ?');
+    stmt.run(lockDurationMinutes, username);
+  }
+
+  public isUserLocked(username: string): boolean {
+    const stmt = this.db.prepare('SELECT locked_until FROM users WHERE username = ? AND locked_until > datetime(\'now\')');
+    return stmt.get(username) !== undefined;
+  }
+
+  // Enhanced Session Management
+  public createUserSession(sessionId: string, userId: string, authType: string, expiresAt: Date, ipAddress?: string, userAgent?: string): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO user_sessions (session_id, user_id, auth_type, expires_at, ip_address, user_agent) 
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+    stmt.run(sessionId, userId, authType, expiresAt.toISOString(), ipAddress, userAgent);
+  }
+
+  public getUserSession(sessionId: string): any {
+    const stmt = this.db.prepare('SELECT * FROM user_sessions WHERE session_id = ? AND expires_at > datetime(\'now\')');
+    return stmt.get(sessionId);
+  }
+
+  public updateSessionActivity(sessionId: string): void {
+    const stmt = this.db.prepare('UPDATE user_sessions SET last_activity = CURRENT_TIMESTAMP WHERE session_id = ?');
+    stmt.run(sessionId);
+  }
+
+  public deleteUserSession(sessionId: string): void {
+    const stmt = this.db.prepare('DELETE FROM user_sessions WHERE session_id = ?');
+    stmt.run(sessionId);
+  }
+
+  public deleteUserSessions(userId: string): void {
+    const stmt = this.db.prepare('DELETE FROM user_sessions WHERE user_id = ?');
+    stmt.run(userId);
+  }
+
+  public getUserSessions(userId: string): any[] {
+    const stmt = this.db.prepare('SELECT * FROM user_sessions WHERE user_id = ? AND expires_at > datetime(\'now\') ORDER BY last_activity DESC');
+    return stmt.all(userId);
+  }
+
+  // 2FA Management
+  public setup2FA(userId: string, secret: string, backupCodes: string[]): void {
+    const stmt = this.db.prepare('INSERT OR REPLACE INTO user_2fa (user_id, secret, backup_codes) VALUES (?, ?, ?)');
+    stmt.run(userId, secret, JSON.stringify(backupCodes));
+  }
+
+  public enable2FA(userId: string): void {
+    const stmt = this.db.prepare('UPDATE user_2fa SET enabled = 1 WHERE user_id = ?');
+    stmt.run(userId);
+  }
+
+  public disable2FA(userId: string): void {
+    const stmt = this.db.prepare('UPDATE user_2fa SET enabled = 0 WHERE user_id = ?');
+    stmt.run(userId);
+  }
+
+  public get2FA(userId: string): any {
+    const stmt = this.db.prepare('SELECT * FROM user_2fa WHERE user_id = ?');
+    return stmt.get(userId);
+  }
+
+  public useBackupCode(userId: string, code: string): boolean {
+    const record = this.get2FA(userId);
+    if (!record || !record.backup_codes) return false;
+    
+    const backupCodes = JSON.parse(record.backup_codes);
+    const codeIndex = backupCodes.indexOf(code);
+    
+    if (codeIndex === -1) return false;
+    
+    // Remove the used backup code
+    backupCodes.splice(codeIndex, 1);
+    const stmt = this.db.prepare('UPDATE user_2fa SET backup_codes = ? WHERE user_id = ?');
+    stmt.run(JSON.stringify(backupCodes), userId);
+    
+    return true;
+  }
+
+  // Rate Limiting
+  public recordAuthAttempt(identifier: string, attemptType: string, success: boolean): void {
+    const stmt = this.db.prepare('INSERT INTO auth_attempts (identifier, attempt_type, success) VALUES (?, ?, ?)');
+    stmt.run(identifier, attemptType, success ? 1 : 0);
+  }
+
+  public getRecentFailedAttempts(identifier: string, attemptType: string, windowMinutes: number = 15): number {
+    const stmt = this.db.prepare(`
+      SELECT COUNT(*) as count 
+      FROM auth_attempts 
+      WHERE identifier = ? 
+      AND attempt_type = ? 
+      AND success = 0 
+      AND created_at > datetime('now', '-' || ? || ' minutes')
+    `);
+    const result = stmt.get(identifier, attemptType, windowMinutes) as { count: number };
+    return result.count;
+  }
+
+  // Complete user deletion for auto-delete functionality
+  public deleteUser(userId: string): void {
+    const transaction = this.db.transaction(() => {
+      // Delete platform credentials
+      const deleteCredentials = this.db.prepare('DELETE FROM credentials WHERE userId = ?');
+      deleteCredentials.run(userId);
+      
+      // Delete post history
+      const deletePosts = this.db.prepare('DELETE FROM posts WHERE userId = ?');
+      deletePosts.run(userId);
+      
+      // Delete user sessions
+      const deleteUserSessions = this.db.prepare('DELETE FROM user_sessions WHERE user_id = ?');
+      deleteUserSessions.run(userId);
+      
+      // Delete 2FA data
+      const delete2FA = this.db.prepare('DELETE FROM user_2fa WHERE user_id = ?');
+      delete2FA.run(userId);
+      
+      // Delete auth attempts (by user_id if it's a username user)
+      const deleteAuthAttempts = this.db.prepare('DELETE FROM auth_attempts WHERE identifier = ?');
+      deleteAuthAttempts.run(userId);
+      
+      // Check if this is a username/password user and delete user record
+      const getUserRecord = this.db.prepare('SELECT * FROM users WHERE user_id = ?');
+      const userRecord = getUserRecord.get(userId) as { username?: string } | undefined;
+      if (userRecord && userRecord.username) {
+        // Delete from users table
+        const deleteUser = this.db.prepare('DELETE FROM users WHERE user_id = ?');
+        deleteUser.run(userId);
+        
+        // Also delete auth attempts by username
+        const deleteAuthAttemptsByUsername = this.db.prepare('DELETE FROM auth_attempts WHERE identifier = ?');
+        deleteAuthAttemptsByUsername.run(userRecord.username);
+      }
+      
+      // For Nostr users, also clean up the old sessions table if using pubkey
+      const deleteNostrSession = this.db.prepare('DELETE FROM sessions WHERE pubkey = ?');
+      deleteNostrSession.run(userId);
+    });
+    
+    transaction();
+    console.log(`🗑️ Auto-deleted all data for user: ${userId}`);
   }
 
   public close(): void {

@@ -68,7 +68,8 @@ export default function Footer() {
               </div>
               <div className="mt-3 pt-2 border-t border-gray-700">
                 <p className="text-xs text-gray-500">
-                  Every sat helps us build more tools to escape the matrix 🔴💊
+                  Every sat helps us build more tools to escape the matrix 🔴💊<br />
+                  <span className="text-xs">Bitcoin • Lightning • Monero accepted</span>
                 </p>
               </div>
             </div>
@@ -77,6 +78,16 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 pt-6">
+          {/* Privacy Policy Notice */}
+          <div className="mb-4 p-3 bg-gray-800 rounded-lg border border-gray-600">
+            <p className="text-xs text-gray-300 text-center">
+              🛡️ <strong>Privacy Notice:</strong> Accounts auto-delete after 30 days of inactivity. 
+              <Link href="/settings" className="text-blue-400 hover:text-blue-300 underline ml-1">
+                Manage in Settings
+              </Link>
+            </p>
+          </div>
+          
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             
             {/* Copyright & Credits */}

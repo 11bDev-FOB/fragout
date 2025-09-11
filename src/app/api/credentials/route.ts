@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { AuthService, DatabaseService, EncryptionService } from '@/services';
+import { updateUserActivity } from '@/utils/autoDelete';
 
 export async function POST(request: Request) {
   try {
@@ -13,6 +14,9 @@ export async function POST(request: Request) {
     if (!userId) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
+
+    // Update user activity for auto-delete tracking
+    updateUserActivity(userId);
 
     if (!platform || !credentials) {
       return NextResponse.json({ error: 'Platform and credentials are required' }, { status: 400 });
@@ -66,6 +70,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
+    // Update user activity for auto-delete tracking
+    updateUserActivity(userId);
+
     const dbService = DatabaseService.getInstance();
     
     // Get all credentials for user
@@ -102,6 +109,9 @@ export async function DELETE(request: Request) {
     if (!userId) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
+
+    // Update user activity for auto-delete tracking
+    updateUserActivity(userId);
 
     const dbService = DatabaseService.getInstance();
     dbService.deleteCredentials(userId, platform);

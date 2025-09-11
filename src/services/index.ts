@@ -2,6 +2,7 @@
 export { default as DatabaseService } from './DatabaseService';
 export { default as EncryptionService } from './EncryptionService';
 export { default as AuthService } from './AuthService';
+export { default as UserAuthService } from './UserAuthService';
 export { default as PostingService } from './PostingService';
 export { default as ImageUploadService } from './ImageUploadService';
 export { default as ClientPostingService } from './ClientPostingService';

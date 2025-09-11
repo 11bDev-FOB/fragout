@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AuthService } from '@/services';
-import { userAutoDeleteSettings, userLastActivity } from '@/utils/autoDelete';
+import { AuthService, DatabaseService } from '@/services';
+import { userAutoDeleteSettings, userLastActivity, updateUserActivity } from '@/utils/autoDelete';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Update user activity when they check settings
+    updateUserActivity(userId);
 
     const enabled = userAutoDeleteSettings.get(userId) || false;
     const lastActivity = userLastActivity.get(userId) || new Date();
@@ -41,7 +44,9 @@ export async function POST(request: NextRequest) {
     userAutoDeleteSettings.set(userId, enabled);
     
     // Update last activity
-    userLastActivity.set(userId, new Date());
+    updateUserActivity(userId);
+    
+    console.log(`🗑️ Auto-delete ${enabled ? 'enabled' : 'disabled'} for user: ${userId}`);
     
     return NextResponse.json({ 
       success: true, 
