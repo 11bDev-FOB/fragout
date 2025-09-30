@@ -1,6 +1,8 @@
 
 # FragOut
 
+*Please forgive us for all the JavaScript - this tactical operation was deployed before we saw the light and shifted our focus to Ruby and Rails. Consider this a historical artifact from our dark JavaScript days. 💣*
+
 **FragOut** is a free, open-source platform for posting to multiple social networks from a single dashboard. It features real-time admin statistics, robust post tracking, system health monitoring, and a snarky legal disclaimer. Built with Next.js, SQLite, and Docker for easy deployment.
 
 - **Multi-platform posting:** Bluesky, Mastodon, Nostr, Twitter, and more
