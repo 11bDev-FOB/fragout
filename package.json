@@ -2,6 +2,14 @@
   "name": "fragout",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/11bDev-FOB/fragout.git"
+  },
+  "bugs": {
+    "url": "https://github.com/11bDev-FOB/fragout/issues"
+  },
+  "homepage": "https://fragout.11b.dev",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

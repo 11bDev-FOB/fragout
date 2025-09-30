@@ -29,7 +29,7 @@
 
 ```bash
 # Clone and install
-git clone https://github.com/11b-dev/fragout.git
+git clone https://github.com/11bDev-FOB/fragout.git
 cd fragout
 npm install
 
