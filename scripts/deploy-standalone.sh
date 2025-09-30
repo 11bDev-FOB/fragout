@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Y'all Web Standalone Deployment Script
-# Deploys Y'all Web service to connect with shared infrastructure
+# FragOut Standalone Deployment Script
+# Deploys FragOut service to connect with shared infrastructure
 
 set -e
 
 cd "$(dirname "$0")"
 
-echo "🚀 Deploying Y'all Web (standalone mode)..."
+echo "🚀 Deploying FragOut (standalone mode)..."
 
 # Check if infrastructure network exists
 if ! docker network ls | grep -q "pleb-services"; then
@@ -41,10 +41,10 @@ timeout 60 bash -c 'until docker-compose -f docker-compose.standalone.yml ps | g
     exit 1
 }
 
-echo "✅ Y'all Web deployed successfully!"
+echo "✅ FragOut deployed successfully!"
 echo ""
-echo "🌐 Available at: https://yall.pleb.one"
-echo "📊 Health check: https://yall.pleb.one/api/health"
+echo "🌐 Available at: https://fragout.11b.dev"
+echo "📊 Health check: https://fragout.11b.dev/api/health"
 echo ""
 echo "📋 Management commands:"
 echo "  View logs:    docker-compose -f docker-compose.standalone.yml logs -f"

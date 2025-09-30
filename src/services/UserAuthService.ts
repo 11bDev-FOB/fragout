@@ -299,7 +299,7 @@ class UserAuthService {
   /**
    * Setup 2FA for a user
    */
-  public async setup2FA(userId: string, serviceName: string = 'Yall Web'): Promise<TwoFactorSetup | null> {
+  public async setup2FA(userId: string, serviceName: string = 'FragOut'): Promise<TwoFactorSetup | null> {
     try {
       const user = this.db.getUserById(userId);
       if (!user) {

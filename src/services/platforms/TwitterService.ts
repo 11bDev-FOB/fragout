@@ -38,7 +38,7 @@ export class TwitterService extends BasePlatformService {
       const response = await fetch('https://api.twitter.com/2/users/me', {
         headers: {
           'Authorization': `Bearer ${bearerToken}`,
-          'User-Agent': 'YallWeb/1.0'
+          'User-Agent': 'FragOut/1.0'
         }
       });
 
@@ -97,7 +97,7 @@ export class TwitterService extends BasePlatformService {
       const response = await fetch('https://api.twitter.com/2/users/me', {
         headers: {
           'Authorization': authHeader,
-          'User-Agent': 'YallWeb/1.0'
+          'User-Agent': 'FragOut/1.0'
         }
       });
 

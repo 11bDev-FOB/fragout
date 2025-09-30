@@ -1,5 +1,5 @@
 # Comprehensive Security Review Report
-## Y'all Web Application
+## FragOut Application
 
 **Date:** August 29, 2025  
 **Reviewer:** GitHub Copilot  
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-The Y'all Web application is a multi-platform social media posting tool built with Next.js. Overall, the application demonstrates good security awareness with several strong protections in place, but there are several **critical and high-risk vulnerabilities** that require immediate attention.
+The FragOut application is a multi-platform social media posting tool built with Next.js. Overall, the application demonstrates good security awareness with several strong protections in place, but there are several **critical and high-risk vulnerabilities** that require immediate attention.
 
 **Risk Assessment:** ⚠️ **HIGH RISK** - Immediate action required
 

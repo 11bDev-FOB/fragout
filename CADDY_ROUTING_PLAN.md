@@ -6,19 +6,19 @@ This server uses **subdomain-based routing** to handle multiple services through
 ## Current Setup
 
 ### Active Services
-- **Main App**: `yall.pleb.one` → `yall-web:3000` (Y'all Web - Social Media Posting)
+- **Main App**: `fragout.11b.dev` → `fragout:3000` (FragOut - Social Media Posting)
 
 ### Planned Services (Ready to Deploy)
-- **Service 1**: `service1.pleb.one` → `service1:PORT` (Replace with actual service name)
-- **Service 2**: `service2.pleb.one` → `service2:PORT` (Replace with actual service name)
+- **Service 1**: `service1.11b.dev` → `service1:PORT` (Replace with actual service name)
+- **Service 2**: `service2.11b.dev` → `service2:PORT` (Replace with actual service name)
 
 ## DNS Configuration Required
 
 For each new service, you'll need to add DNS A records pointing to your server IP:
 
 ```
-service1.pleb.one  A  YOUR_SERVER_IP
-service2.pleb.one  A  YOUR_SERVER_IP
+service1.11b.dev  A  YOUR_SERVER_IP
+service2.11b.dev  A  YOUR_SERVER_IP
 ```
 
 ## Adding a New Service
@@ -29,7 +29,7 @@ service2.pleb.one  A  YOUR_SERVER_IP
      image: your/service:latest
      restart: unless-stopped
      networks:
-       - yall-network
+       - fragout-network
      # Add health check, volumes, etc.
    ```
 
@@ -61,7 +61,7 @@ Each service gets:
 
 ## Maintenance Notes
 
-- All services share the `yall-network` Docker network
+- All services share the `fragout-network` Docker network
 - Caddy data is persisted in `caddy_data` volume
 - SSL certificates are automatically managed
 - Logs are stored in `caddy_logs` volume
@@ -70,4 +70,4 @@ Each service gets:
 
 - Check service health: `docker compose -f docker-compose.prod.yml ps`
 - View Caddy logs: `docker compose -f docker-compose.prod.yml logs caddy`
-- Test SSL: `curl -I https://subdomain.pleb.one`
+- Test SSL: `curl -I https://subdomain.11b.dev`

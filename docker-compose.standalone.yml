@@ -1,8 +1,8 @@
 version: '3.8'
 
-# Y'all Web Service - Social Media Posting Application
+# FragOut Service - Social Media Posting Application
 # This service connects to the shared infrastructure network
-# Caddy proxy routes yall.pleb.one traffic to this service
+# Caddy proxy routes fragout.11b.dev traffic to this service
 
 services:
   # Init container to fix volume permissions
@@ -20,19 +20,19 @@ services:
         echo 'Permissions fixed successfully'
       "
 
-  yall-web:
+  fragout:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: yall-web
+    container_name: fragout
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
     env_file:
       - .env.local
     volumes:
-      - yall_data:/app/data
-      - yall_db:/app/db
+      - fragout_data:/app/data
+      - fragout_db:/app/db
     restart: unless-stopped
     depends_on:
       init-permissions:
@@ -63,13 +63,13 @@ services:
       start_period: 40s
 
 volumes:
-  yall_data:
+  fragout_data:
     driver: local
-  yall_db:
+  fragout_db:
     driver: local
 
 # Connect to shared infrastructure network
 networks:
   default:
-    name: pleb-services
+    name: 11b-services
     external: true

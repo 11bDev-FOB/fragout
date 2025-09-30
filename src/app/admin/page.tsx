@@ -136,10 +136,10 @@ export default function AdminPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-200 via-orange-100 to-yellow-100 dark:from-gray-900 dark:via-red-900 dark:to-orange-900 flex items-center justify-center">
+      <main className="min-h-screen bg-gradient-to-br from-tactical-50 via-military-100 to-tactical-100 dark:from-tactical-950 dark:via-military-900 dark:to-tactical-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-700 dark:border-red-400 mx-auto mb-4"></div>
-          <p className="text-xl text-red-700 dark:text-red-400 font-semibold">Checking admin access...</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-lightning-500 dark:border-lightning-400 mx-auto mb-4"></div>
+          <p className="text-xl text-tactical-700 dark:text-lightning-400 font-semibold">Accessing command center...</p>
         </div>
       </main>
     );
@@ -147,16 +147,16 @@ export default function AdminPage() {
 
   if (!isAdmin) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-200 via-orange-100 to-yellow-100 dark:from-gray-900 dark:via-red-900 dark:to-orange-900 flex items-center justify-center">
-        <div className="text-center bg-white/90 dark:bg-gray-800/90 rounded-2xl shadow-lg p-8 border border-red-200 dark:border-red-700">
+      <main className="min-h-screen bg-gradient-to-br from-tactical-50 via-military-100 to-tactical-100 dark:from-tactical-950 dark:via-military-900 dark:to-tactical-900 flex items-center justify-center">
+        <div className="text-center bg-white/90 dark:bg-tactical-800/90 rounded-2xl shadow-military p-8 border border-red-200 dark:border-red-700 backdrop-blur-sm">
           <div className="text-6xl mb-4">🚫</div>
           <h1 className="text-3xl font-bold text-red-700 dark:text-red-400 mb-4">Access Denied</h1>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">You don't have permission to access this page.</p>
+          <p className="text-tactical-700 dark:text-tactical-300 mb-6">You don't have clearance to access this command center.</p>
           <Link 
             href="/dashboard"
-            className="inline-block bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+            className="inline-block bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-tactical"
           >
-            Back to Dashboard
+            Return to Base
           </Link>
         </div>
       </main>
@@ -164,22 +164,22 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-red-200 via-orange-100 to-yellow-100 dark:from-gray-900 dark:via-red-900 dark:to-orange-900">
+    <main className="min-h-screen bg-gradient-to-br from-tactical-50 via-military-100 to-tactical-100 dark:from-tactical-950 dark:via-military-900 dark:to-tactical-900">
       <Navigation currentPage="admin" />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6">
         
         {/* Header */}
-        <div className="text-center mb-8 bg-white/90 dark:bg-gray-800/90 rounded-2xl shadow-lg p-8 border border-red-200 dark:border-gray-700">
-          <h1 className="text-4xl font-extrabold mb-4 text-red-700 dark:text-red-400 drop-shadow">
-            🛡️ Admin Dashboard
+        <div className="text-center mb-8 bg-white/90 dark:bg-tactical-800/90 rounded-2xl shadow-military p-8 border border-lightning-200 dark:border-tactical-700 backdrop-blur-sm">
+          <h1 className="text-4xl font-extrabold mb-4 text-tactical-700 dark:text-lightning-400 drop-shadow">
+            🛡️ Command Center
           </h1>
-          <p className="text-xl text-gray-700 dark:text-gray-300">
-            System statistics and management tools for Y'all Web
+          <p className="text-xl text-tactical-600 dark:text-tactical-300">
+            Mission-critical statistics and battlefield management for FragOut
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-            Auto-refreshes every 30 seconds • Last updated: {stats ? new Date().toLocaleTimeString() : 'Loading...'}
+          <p className="text-sm text-tactical-500 dark:text-tactical-400 mt-2">
+            Auto-intel refresh every 30 seconds • Last sitrep: {stats ? new Date().toLocaleTimeString() : 'Loading...'}
           </p>
         </div>
 
@@ -190,15 +190,15 @@ export default function AdminPage() {
               <div className="flex items-center">
                 <div className="text-2xl mr-3">⚠️</div>
                 <div>
-                  <h3 className="text-lg font-semibold text-red-700 dark:text-red-400">Statistics Loading Error</h3>
+                  <h3 className="text-lg font-semibold text-red-700 dark:text-red-400">Intel Gathering Error</h3>
                   <p className="text-red-600 dark:text-red-300">{statsError}</p>
                 </div>
               </div>
               <button
                 onClick={loadStats}
-                className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-tactical"
               >
-                Retry
+                Retry Mission
               </button>
             </div>
           </div>
@@ -208,90 +208,90 @@ export default function AdminPage() {
           <>
             {/* Key Metrics */}
             <div className="grid md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-6 border border-blue-200 dark:border-blue-700 text-center">
-                <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">{stats.totalUsers}</div>
-                <div className="text-blue-600 dark:text-blue-300 font-semibold">Total Users</div>
+              <div className="bg-lightning-50 dark:bg-lightning-900/30 rounded-xl p-6 border border-lightning-200 dark:border-lightning-700 text-center">
+                <div className="text-3xl font-bold text-lightning-700 dark:text-lightning-400">{stats.totalUsers}</div>
+                <div className="text-lightning-600 dark:text-lightning-300 font-semibold">Total Operatives</div>
               </div>
-              <div className="bg-green-50 dark:bg-green-900/30 rounded-xl p-6 border border-green-200 dark:border-green-700 text-center">
-                <div className="text-3xl font-bold text-green-700 dark:text-green-400">{stats.totalPosts}</div>
-                <div className="text-green-600 dark:text-green-300 font-semibold">Total Posts</div>
+              <div className="bg-tactical-50 dark:bg-tactical-900/30 rounded-xl p-6 border border-tactical-200 dark:border-tactical-700 text-center">
+                <div className="text-3xl font-bold text-tactical-700 dark:text-tactical-400">{stats.totalPosts}</div>
+                <div className="text-tactical-600 dark:text-tactical-300 font-semibold">Total Missions</div>
               </div>
-              <div className="bg-purple-50 dark:bg-purple-900/30 rounded-xl p-6 border border-purple-200 dark:border-purple-700 text-center">
-                <div className="text-3xl font-bold text-purple-700 dark:text-purple-400">{stats.userEngagement.dailyActiveUsers}</div>
-                <div className="text-purple-600 dark:text-purple-300 font-semibold">Daily Active Users</div>
+              <div className="bg-military-50 dark:bg-military-900/30 rounded-xl p-6 border border-military-200 dark:border-military-700 text-center">
+                <div className="text-3xl font-bold text-military-700 dark:text-military-400">{stats.userEngagement.dailyActiveUsers}</div>
+                <div className="text-military-600 dark:text-military-300 font-semibold">Daily Active</div>
               </div>
-              <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-6 border border-orange-200 dark:border-orange-700 text-center">
-                <div className="text-3xl font-bold text-orange-700 dark:text-orange-400">{stats.userEngagement.averagePostsPerUser.toFixed(1)}</div>
-                <div className="text-orange-600 dark:text-orange-300 font-semibold">Avg Posts/User</div>
+              <div className="bg-tactical-50 dark:bg-tactical-900/30 rounded-xl p-6 border border-tactical-200 dark:border-tactical-700 text-center">
+                <div className="text-3xl font-bold text-tactical-700 dark:text-tactical-400">{stats.userEngagement.averagePostsPerUser.toFixed(1)}</div>
+                <div className="text-tactical-600 dark:text-tactical-300 font-semibold">Avg Missions/Operative</div>
               </div>
             </div>
 
             {/* Platform Statistics */}
             <div className="grid md:grid-cols-2 gap-8 mb-8">
-              <div className="bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">📊 Platform Usage</h2>
+              <div className="bg-white/90 dark:bg-tactical-800/90 rounded-xl shadow-military p-6 border border-tactical-200 dark:border-tactical-700 backdrop-blur-sm">
+                <h2 className="text-2xl font-bold text-tactical-800 dark:text-lightning-400 mb-4">📊 Platform Deployment</h2>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="flex items-center text-gray-700 dark:text-gray-300">
+                    <span className="flex items-center text-tactical-700 dark:text-tactical-300">
                       <span className="text-blue-500 mr-2">🐦</span>
                       X (Twitter)
                     </span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.platformBreakdown.twitter} posts</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.platformBreakdown.twitter} missions</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="flex items-center text-gray-700 dark:text-gray-300">
+                    <span className="flex items-center text-tactical-700 dark:text-tactical-300">
                       <span className="text-indigo-500 mr-2">🐘</span>
                       Mastodon
                     </span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.platformBreakdown.mastodon} posts</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.platformBreakdown.mastodon} missions</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="flex items-center text-gray-700 dark:text-gray-300">
+                    <span className="flex items-center text-tactical-700 dark:text-tactical-300">
                       <span className="text-sky-500 mr-2">🦋</span>
                       BlueSky
                     </span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.platformBreakdown.bluesky} posts</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.platformBreakdown.bluesky} missions</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="flex items-center text-gray-700 dark:text-gray-300">
-                      <span className="text-purple-500 mr-2">🟣</span>
+                    <span className="flex items-center text-tactical-700 dark:text-tactical-300">
+                      <span className="text-lightning-500 mr-2">🎯</span>
                       Nostr
                     </span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.platformBreakdown.nostr} posts</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.platformBreakdown.nostr} missions</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">🔑 Connected Accounts</h2>
+              <div className="bg-white/90 dark:bg-tactical-800/90 rounded-xl shadow-military p-6 border border-tactical-200 dark:border-tactical-700 backdrop-blur-sm">
+                <h2 className="text-2xl font-bold text-tactical-800 dark:text-lightning-400 mb-4">🔑 Active Credentials</h2>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="flex items-center text-gray-700 dark:text-gray-300">
+                    <span className="flex items-center text-tactical-700 dark:text-tactical-300">
                       <span className="text-blue-500 mr-2">🐦</span>
                       X (Twitter)
                     </span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.credentialsCount.twitter} accounts</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.credentialsCount.twitter} operatives</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="flex items-center text-gray-700 dark:text-gray-300">
+                    <span className="flex items-center text-tactical-700 dark:text-tactical-300">
                       <span className="text-indigo-500 mr-2">🐘</span>
                       Mastodon
                     </span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.credentialsCount.mastodon} accounts</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.credentialsCount.mastodon} operatives</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="flex items-center text-gray-700 dark:text-gray-300">
+                    <span className="flex items-center text-tactical-700 dark:text-tactical-300">
                       <span className="text-sky-500 mr-2">🦋</span>
                       BlueSky
                     </span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.credentialsCount.bluesky} accounts</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.credentialsCount.bluesky} operatives</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="flex items-center text-gray-700 dark:text-gray-300">
-                      <span className="text-purple-500 mr-2">🟣</span>
+                    <span className="flex items-center text-tactical-700 dark:text-tactical-300">
+                      <span className="text-lightning-500 mr-2">🎯</span>
                       Nostr
                     </span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.credentialsCount.nostr} accounts</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.credentialsCount.nostr} operatives</span>
                   </div>
                 </div>
               </div>
@@ -299,45 +299,45 @@ export default function AdminPage() {
 
             {/* System Health */}
             <div className="grid md:grid-cols-2 gap-8 mb-8">
-              <div className="bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">💚 System Health</h2>
+              <div className="bg-white/90 dark:bg-tactical-800/90 rounded-xl shadow-military p-6 border border-tactical-200 dark:border-tactical-700 backdrop-blur-sm">
+                <h2 className="text-2xl font-bold text-tactical-800 dark:text-lightning-400 mb-4">💚 Base Systems Status</h2>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Uptime:</span>
+                    <span className="text-tactical-600 dark:text-tactical-400">Mission Uptime:</span>
                     <span className="font-semibold text-green-600 dark:text-green-400">{stats.systemHealth.uptime}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Memory Usage:</span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.systemHealth.memoryUsage}</span>
+                    <span className="text-tactical-600 dark:text-tactical-400">Memory Usage:</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.systemHealth.memoryUsage}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Disk Space:</span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.systemHealth.diskSpace}</span>
+                    <span className="text-tactical-600 dark:text-tactical-400">Storage Space:</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.systemHealth.diskSpace}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Active Connections:</span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.systemHealth.activeConnections}</span>
+                    <span className="text-tactical-600 dark:text-tactical-400">Active Connections:</span>
+                    <span className="font-semibold text-tactical-900 dark:text-tactical-100">{stats.systemHealth.activeConnections}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">👥 User Engagement</h2>
+              <div className="bg-white/90 dark:bg-tactical-800/90 rounded-xl shadow-military p-6 border border-tactical-200 dark:border-tactical-700 backdrop-blur-sm">
+                <h2 className="text-2xl font-bold text-tactical-800 dark:text-lightning-400 mb-4">👥 Operative Engagement</h2>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Daily Active:</span>
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">{stats.userEngagement.dailyActiveUsers}</span>
+                    <span className="text-tactical-600 dark:text-tactical-400">Daily Active:</span>
+                    <span className="font-semibold text-lightning-600 dark:text-lightning-400">{stats.userEngagement.dailyActiveUsers}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Weekly Active:</span>
-                    <span className="font-semibold text-green-600 dark:text-green-400">{stats.userEngagement.weeklyActiveUsers}</span>
+                    <span className="text-tactical-600 dark:text-tactical-400">Weekly Active:</span>
+                    <span className="font-semibold text-tactical-600 dark:text-tactical-400">{stats.userEngagement.weeklyActiveUsers}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Monthly Active:</span>
-                    <span className="font-semibold text-purple-600 dark:text-purple-400">{stats.userEngagement.monthlyActiveUsers}</span>
+                    <span className="text-tactical-600 dark:text-tactical-400">Monthly Active:</span>
+                    <span className="font-semibold text-military-600 dark:text-military-400">{stats.userEngagement.monthlyActiveUsers}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Auto-Delete Users:</span>
+                    <span className="text-tactical-600 dark:text-tactical-400">Auto-Purge Protocol:</span>
                     <span className="font-semibold text-yellow-600 dark:text-yellow-400">{stats.autoDeleteStats.usersWithAutoDelete}</span>
                   </div>
                 </div>
@@ -345,23 +345,23 @@ export default function AdminPage() {
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">📈 Recent Activity (Last 7 Days)</h2>
+            <div className="bg-white/90 dark:bg-tactical-800/90 rounded-xl shadow-military p-6 border border-tactical-200 dark:border-tactical-700 backdrop-blur-sm mb-8">
+              <h2 className="text-2xl font-bold text-tactical-800 dark:text-lightning-400 mb-4">📈 Mission Activity (Last 7 Days)</h2>
               <div className="overflow-x-auto">
                 <table className="w-full table-auto">
                   <thead>
-                    <tr className="bg-gray-50 dark:bg-gray-700">
-                      <th className="text-left p-3 font-semibold text-gray-700 dark:text-gray-300">Date</th>
-                      <th className="text-left p-3 font-semibold text-gray-700 dark:text-gray-300">Posts</th>
-                      <th className="text-left p-3 font-semibold text-gray-700 dark:text-gray-300">New Users</th>
+                    <tr className="bg-tactical-50 dark:bg-tactical-700">
+                      <th className="text-left p-3 font-semibold text-tactical-700 dark:text-tactical-300">Date</th>
+                      <th className="text-left p-3 font-semibold text-tactical-700 dark:text-tactical-300">Missions</th>
+                      <th className="text-left p-3 font-semibold text-tactical-700 dark:text-tactical-300">New Operatives</th>
                     </tr>
                   </thead>
                   <tbody>
                     {stats.recentActivity.map((day, index) => (
-                      <tr key={index} className="border-b border-gray-200 dark:border-gray-600">
-                        <td className="p-3 text-gray-800 dark:text-gray-200">{new Date(day.date).toLocaleDateString()}</td>
-                        <td className="p-3 font-semibold text-green-600 dark:text-green-400">{day.posts}</td>
-                        <td className="p-3 font-semibold text-blue-600 dark:text-blue-400">{day.newUsers}</td>
+                      <tr key={index} className="border-b border-tactical-200 dark:border-tactical-600">
+                        <td className="p-3 text-tactical-800 dark:text-tactical-200">{new Date(day.date).toLocaleDateString()}</td>
+                        <td className="p-3 font-semibold text-tactical-600 dark:text-tactical-400">{day.posts}</td>
+                        <td className="p-3 font-semibold text-lightning-600 dark:text-lightning-400">{day.newUsers}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -370,14 +370,14 @@ export default function AdminPage() {
             </div>
 
             {/* Error Logs */}
-            <div className="bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white/90 dark:bg-tactical-800/90 rounded-xl shadow-military p-6 border border-tactical-200 dark:border-tactical-700 backdrop-blur-sm">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">🚨 Recent Errors</h2>
+                <h2 className="text-2xl font-bold text-tactical-800 dark:text-lightning-400">🚨 Incident Reports</h2>
                 <button
                   onClick={clearErrorLogs}
-                  className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                  className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-tactical"
                 >
-                  Clear Logs
+                  Clear Reports
                 </button>
               </div>
               {stats.errorLogs.length > 0 ? (
@@ -393,7 +393,7 @@ export default function AdminPage() {
                             </span>
                           )}
                         </div>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 ml-4">
+                        <span className="text-xs text-tactical-500 dark:text-tactical-400 ml-4">
                           {new Date(log.timestamp).toLocaleString()}
                         </span>
                       </div>
@@ -401,7 +401,7 @@ export default function AdminPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 dark:text-gray-400 text-center py-8">No recent errors 🎉</p>
+                <p className="text-tactical-500 dark:text-tactical-400 text-center py-8">All systems operational �</p>
               )}
             </div>
           </>

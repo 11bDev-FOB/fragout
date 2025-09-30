@@ -49,7 +49,6 @@ export function addSecurityHeaders(request: NextRequest, response: NextResponse)
       'camera=()',
       'microphone=()',
       'geolocation=()',
-      'payment=()',
       'usb=()',
       'magnetometer=()',
       'accelerometer=()',

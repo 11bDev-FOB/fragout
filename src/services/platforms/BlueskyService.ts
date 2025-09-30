@@ -41,7 +41,7 @@ export class BlueskyService extends BasePlatformService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'YallWeb/1.0'
+          'User-Agent': 'FragOut/1.0'
         },
         body: JSON.stringify({
           identifier: normalizedHandle,
@@ -166,7 +166,7 @@ export class BlueskyService extends BasePlatformService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'YallWeb/1.0'
+          'User-Agent': 'FragOut/1.0'
         },
         body: JSON.stringify(authPayload)
       });
@@ -272,7 +272,7 @@ export class BlueskyService extends BasePlatformService {
         headers: {
           'Authorization': `Bearer ${authData.accessJwt}`,
           'Content-Type': 'application/json',
-          'User-Agent': 'YallWeb/1.0'
+          'User-Agent': 'FragOut/1.0'
         },
         body: JSON.stringify({
           repo: authData.did,

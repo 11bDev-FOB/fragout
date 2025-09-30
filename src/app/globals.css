@@ -3,40 +3,121 @@
 @tailwind utilities;
 
 :root {
-  --background: #f8fafc;
-  --foreground: #171717;
+  --background: #1f251f;
+  --foreground: #e1e5e1;
+  --tactical-primary: #4a7c4a;
+  --tactical-secondary: #5a6b5a;
+  --lightning-accent: #fbbf24;
+}
+
+[data-theme="light"] {
+  --background: #f6f7f6;
+  --foreground: #1f251f;
 }
 
 body {
-  background: linear-gradient(135deg, #c7d2fe 0%, #e9d5ff 50%, #fbcfe8 100%);
+  /* Military-inspired tactical background */
+  background: linear-gradient(135deg, #1a2b1a 0%, #2f4f2f 25%, #1f251f 50%, #253e25 75%, #1a2b1a 100%);
   color: var(--foreground);
   font-family: 'Inter', Arial, Helvetica, sans-serif;
   min-height: 100vh;
+  /* Subtle tactical texture overlay */
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(74, 124, 74, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(251, 191, 36, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Light mode overrides */
+.light body {
+  background: linear-gradient(135deg, #f0f4f0 0%, #dcebdc 25%, #f6f7f6 50%, #e1e5e1 75%, #f0f4f0 100%);
+  color: var(--foreground);
+}
+
+.light body::before {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(74, 124, 74, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(251, 191, 36, 0.03) 0%, transparent 50%);
 }
 
 h1, h2 {
   font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-weight: 700;
 }
 
 a {
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, color 0.15s ease-out;
 }
 
 a:hover {
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.15);
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
 }
 
+/* Tactical-inspired shadows */
 .shadow-2xl {
-  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.12), 0 1.5px 6px rgba(236, 72, 153, 0.08);
+  box-shadow: 
+    0 8px 32px rgba(31, 37, 31, 0.25), 
+    0 2px 8px rgba(90, 107, 90, 0.15),
+    inset 0 1px 0 rgba(251, 191, 36, 0.1);
+}
+
+.shadow-tactical {
+  box-shadow: 
+    0 4px 16px rgba(31, 37, 31, 0.2), 
+    0 1px 4px rgba(90, 107, 90, 0.1);
 }
 
 .rounded-2xl {
   border-radius: 1.25rem;
 }
 
-/* Custom utility for glassmorphism effect */
+/* Glassmorphism with tactical theme */
 .bg-white\/90 {
-  background: rgba(255,255,255,0.90);
-  backdrop-filter: blur(8px);
+  background: rgba(31, 37, 31, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 124, 74, 0.2);
+}
+
+.light .bg-white\/90 {
+  background: rgba(246, 247, 246, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(161, 229, 161, 0.3);
+}
+
+/* Lightning accent utilities */
+.text-lightning {
+  color: var(--lightning-accent);
+}
+
+.bg-lightning {
+  background-color: var(--lightning-accent);
+}
+
+.border-lightning {
+  border-color: var(--lightning-accent);
+}
+
+/* Tactical utilities */
+.text-tactical {
+  color: var(--tactical-primary);
+}
+
+.bg-tactical {
+  background-color: var(--tactical-primary);
+}
+
+.border-tactical {
+  border-color: var(--tactical-secondary);
 }

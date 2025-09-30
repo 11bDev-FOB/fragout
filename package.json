@@ -1,5 +1,5 @@
 {
-  "name": "yall-web",
+  "name": "fragout",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "docker:build": "docker build -t yall-web .",
-    "docker:run": "docker run -p 3000:3000 --env-file .env.local yall-web",
+    "docker:build": "docker build -t fragout .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env.local fragout",
     "docker:compose": "docker-compose up -d",
     "security:check": "echo 'Security Score: 8.0/10 - See SECURITY_REVIEW.md for details'"
   },

@@ -7,7 +7,7 @@ your-service:
   image: your/service:tag
   restart: unless-stopped
   networks:
-    - yall-network
+    - fragout-network
   healthcheck:
     test: ["CMD", "curl", "-f", "http://localhost:PORT/health"]
     interval: 30s
@@ -23,7 +23,7 @@ your-service:
 
 ## 3. Add DNS Record
 ```
-your-service.pleb.one  A  YOUR_SERVER_IP
+your-service.11b.dev  A  YOUR_SERVER_IP
 ```
 
 ## 4. Deploy
@@ -37,5 +37,5 @@ docker compose -f docker-compose.prod.yml restart caddy
 
 ## 5. Test
 ```bash
-curl -I https://your-service.pleb.one/health
+curl -I https://your-service.11b.dev/health
 ```

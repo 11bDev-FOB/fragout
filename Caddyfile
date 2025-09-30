@@ -1,14 +1,14 @@
-# Caddyfile for Multi-Service Deployment with pleb.one subdomains
+# Caddyfile for Multi-Service Deployment with 11b.dev subdomains
 # See CADDY_ROUTING_PLAN.md for full documentation
 
 # =============================================================================
 # ACTIVE SERVICES
 # =============================================================================
 
-# Main Y'all Web Application
-yall.pleb.one {
+# Main FragOut Application
+fragout.11b.dev {
     # Reverse proxy to the Next.js app
-    reverse_proxy yall-web:3000
+    reverse_proxy fragout:3000
 
     # Security headers (enhancing the app's built-in security)
     header {
@@ -51,7 +51,7 @@ yall.pleb.one {
 # =============================================================================
 
 # Service 1 - Replace 'service1' with actual service name
-# service1.pleb.one {
+# service1.11b.dev {
 #     reverse_proxy service1:PORT
 #     
 #     header {
@@ -76,7 +76,7 @@ yall.pleb.one {
 # }
 
 # Service 2 - Replace 'service2' with actual service name  
-# service2.pleb.one {
+# service2.11b.dev {
 #     reverse_proxy service2:PORT
 #     
 #     header {
@@ -105,17 +105,17 @@ yall.pleb.one {
 # =============================================================================
 
 # Redirect HTTP to HTTPS for main domain
-http://yall.pleb.one {
-    redir https://yall.pleb.one{uri} permanent
+http://fragout.11b.dev {
+    redir https://fragout.11b.dev{uri} permanent
 }
 
 # Add HTTP redirects for new services here:
-# http://service1.pleb.one {
-#     redir https://service1.pleb.one{uri} permanent
+# http://service1.11b.dev {
+#     redir https://service1.11b.dev{uri} permanent
 # }
 
-# http://service2.pleb.one {
-#     redir https://service2.pleb.one{uri} permanent
+# http://service2.11b.dev {
+#     redir https://service2.11b.dev{uri} permanent
 # }
 
 # =============================================================================

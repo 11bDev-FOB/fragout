@@ -408,25 +408,25 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-200 via-purple-100 to-pink-100 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900">
+    <main className="min-h-screen flex flex-col bg-gradient-to-br from-tactical-900 via-tactical-800 to-military-900 dark:from-tactical-950 dark:via-tactical-900 dark:to-military-950">
       <Navigation currentPage="dashboard" />
       
-      {/* Auto-Delete Policy Notice */}
-      <div className="max-w-2xl mx-auto mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
-        <p className="text-sm text-blue-800 dark:text-blue-300 text-center">
-          💡 <strong>Reminder:</strong> Your account will be automatically deleted after 30 days of inactivity. 
-          <Link href="/settings" className="underline hover:text-blue-600 dark:hover:text-blue-400 ml-1">
-            Disable in Settings
+      {/* Auto-Delete OpSec Notice */}
+      <div className="max-w-2xl mx-auto mt-6 p-4 bg-military-800/50 dark:bg-military-900/30 rounded-lg border border-lightning-500/40 dark:border-lightning-600/40">
+        <p className="text-sm text-lightning-200 dark:text-lightning-100 text-center">
+          💡 <strong>OpSec Reminder:</strong> Your account will be automatically deleted after 30 days of inactivity. 
+          <Link href="/settings" className="underline hover:text-lightning-300 dark:hover:text-lightning-200 ml-1">
+            Manage in Settings
           </Link>
         </p>
       </div>
       
-      <section className="max-w-2xl mx-auto mt-6 bg-white/90 dark:bg-gray-800/90 rounded-2xl shadow-2xl p-10 border border-purple-200 dark:border-gray-700">
-        <h1 className="text-3xl font-extrabold mb-6 text-center text-purple-700 dark:text-purple-400 drop-shadow">Compose Post</h1>
+      <section className="max-w-2xl mx-auto mt-6 bg-tactical-800/95 dark:bg-tactical-950/95 rounded-2xl shadow-tactical p-10 border border-lightning-600/30 dark:border-lightning-700/30 backdrop-blur-sm">
+        <h1 className="text-3xl font-extrabold mb-6 text-center text-lightning-300 dark:text-lightning-200 drop-shadow">Mission Broadcast</h1>
         <form onSubmit={handlePost} className="space-y-6">
           <textarea
-            className="w-full p-4 border-2 border-purple-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl min-h-[120px] text-lg focus:outline-none focus:border-purple-400 dark:focus:border-purple-500"
-            placeholder="What's on your mind?"
+            className="w-full p-4 border-2 border-tactical-600 dark:border-tactical-700 bg-tactical-700 dark:bg-tactical-800 text-tactical-100 rounded-xl min-h-[120px] text-lg focus:outline-none focus:border-lightning-400 dark:focus:border-lightning-500 placeholder-tactical-400"
+            placeholder="What's the mission status?"
             value={message}
             onChange={e => setMessage(e.target.value)}
           />
@@ -434,12 +434,12 @@ export default function DashboardPage() {
           {/* Image Upload Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Add Images (Optional)
+              <label className="text-sm font-medium text-tactical-200 dark:text-tactical-100">
+                Add Intel Images (Optional)
               </label>
-              <label className="cursor-pointer bg-purple-100 dark:bg-purple-800 hover:bg-purple-200 dark:hover:bg-purple-700 text-purple-700 dark:text-purple-300 px-4 py-2 rounded-lg transition-colors inline-flex items-center">
+              <label className="cursor-pointer bg-military-700 dark:bg-military-800 hover:bg-military-600 dark:hover:bg-military-700 text-tactical-100 dark:text-tactical-50 px-4 py-2 rounded-lg transition-colors inline-flex items-center">
                 <span className="mr-2">📷</span>
-                Choose Images
+                Upload Intel
                 <input
                   type="file"
                   multiple
@@ -457,7 +457,7 @@ export default function DashboardPage() {
                   <div key={index} className="relative group">
                     <img
                       src={url}
-                      alt={`Upload preview ${index + 1}`}
+                      alt={`Intel preview ${index + 1}`}
                       className="w-full h-32 object-cover rounded-lg border-2 border-purple-200 dark:border-gray-600"
                     />
                     <button
@@ -484,26 +484,26 @@ export default function DashboardPage() {
             )}
             
             {images.length > 0 && selected.some(platform => !['mastodon', 'nostr'].includes(platform)) && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <div className="bg-military-800/50 border border-lightning-500/40 rounded-lg p-3">
                 <div className="flex items-start">
-                  <span className="text-yellow-600 mr-2">ℹ️</span>
-                  <p className="text-sm text-yellow-700">
-                    <strong>Image Support:</strong> Images will only be posted to platforms that support them (Mastodon, Nostr). 
-                    Other platforms will receive text-only posts.
+                  <span className="text-lightning-400 mr-2">ℹ️</span>
+                  <p className="text-sm text-tactical-200">
+                    <strong>Intel Support:</strong> Images will only be deployed to platforms that support them (Mastodon, Nostr). 
+                    Other platforms will receive text-only transmissions.
                   </p>
                 </div>
               </div>
             )}
             
             {images.length >= 4 && (
-              <p className="text-sm text-gray-600 text-center">
-                Maximum of 4 images allowed
+              <p className="text-sm text-tactical-300 text-center">
+                Maximum of 4 intel images allowed
               </p>
             )}
           </div>
           <div className="flex flex-wrap gap-4 justify-center">
             {isLoading ? (
-              <div className="text-purple-600">Loading platforms...</div>
+              <div className="text-lightning-400">Loading platforms...</div>
             ) : (
               platforms.map(platform => {
                 const isConfigured = isPlatformAvailable(platform.id);
@@ -517,16 +517,16 @@ export default function DashboardPage() {
                       type="button"
                       className={`px-6 py-2 rounded-xl font-bold shadow border transition ${
                         !isConfigured
-                          ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600 cursor-not-allowed'
+                          ? 'bg-tactical-600 dark:bg-tactical-700 text-tactical-400 dark:text-tactical-500 border-tactical-500 dark:border-tactical-600 cursor-not-allowed'
                           : isSelected
-                          ? 'bg-purple-500 text-white border-purple-300 dark:border-purple-600'
-                          : 'bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-600 hover:bg-purple-200 dark:hover:bg-purple-700'
+                          ? 'bg-lightning-500 text-tactical-900 border-lightning-400 dark:border-lightning-600'
+                          : 'bg-military-700 dark:bg-military-800 text-tactical-100 dark:text-tactical-50 border-military-600 dark:border-military-700 hover:bg-military-600 dark:hover:bg-military-700'
                       }`}
                       onClick={() => togglePlatform(platform.id)}
                       disabled={!isConfigured}
                       title={
                         !isConfigured 
-                          ? `${platform.name} is not set up. Click to configure.` 
+                          ? `${platform.name} is not deployed. Click to configure.` 
                           : isNip07Nostr 
                           ? `${platform.name} (NIP-07 Extension)${supportsImages ? ' - Supports Images' : ''}`
                           : supportsImages
@@ -548,10 +548,10 @@ export default function DashboardPage() {
                     {!isConfigured && (
                       <Link
                         href="/platform-setup"
-                        className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full hover:bg-orange-600 transition"
-                        title={`Set up ${platform.name}`}
+                        className="absolute -top-2 -right-2 bg-lightning-600 text-tactical-900 text-xs px-2 py-1 rounded-full hover:bg-lightning-500 transition"
+                        title={`Deploy ${platform.name}`}
                       >
-                        Setup
+                        Deploy
                       </Link>
                     )}
                   </div>
@@ -561,38 +561,38 @@ export default function DashboardPage() {
           </div>
           
           {!isLoading && configuredPlatforms.length === 0 && nip07Available && (
-            <div className="text-center p-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-xl">
-              <div className="text-blue-800 dark:text-blue-300 mb-2">
+            <div className="text-center p-6 bg-military-800/50 dark:bg-military-900/30 border border-lightning-500/40 dark:border-lightning-600/40 rounded-xl">
+              <div className="text-lightning-400 dark:text-lightning-300 mb-2">
                 <span className="text-2xl">🔗</span>
               </div>
-              <h3 className="font-bold text-blue-800 dark:text-blue-300 mb-2">NIP-07 Extension Detected</h3>
-              <p className="text-blue-700 dark:text-blue-200 mb-4">
-                Your Nostr browser extension is available! You can post to Nostr using your extension.
-                Set up additional platforms to post to multiple networks at once.
+              <h3 className="font-bold text-lightning-300 dark:text-lightning-200 mb-2">NIP-07 Extension Detected</h3>
+              <p className="text-tactical-200 dark:text-tactical-100 mb-4">
+                Your Nostr browser extension is ready for deployment! You can broadcast to Nostr using your extension.
+                Deploy additional platforms to coordinate multi-network operations.
               </p>
               <Link
                 href="/platform-setup"
-                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 dark:hover:bg-blue-500 transition"
+                className="inline-block bg-lightning-600 text-tactical-900 px-6 py-2 rounded-lg font-bold hover:bg-lightning-500 dark:hover:bg-lightning-500 transition"
               >
-                Set Up More Platforms
+                Deploy More Platforms
               </Link>
             </div>
           )}
           
           {!isLoading && configuredPlatforms.length === 0 && !nip07Available && (
-            <div className="text-center p-6 bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 rounded-xl">
-              <div className="text-orange-800 dark:text-orange-300 mb-2">
+            <div className="text-center p-6 bg-military-800/50 dark:bg-military-900/30 border border-lightning-500/40 dark:border-lightning-600/40 rounded-xl">
+              <div className="text-lightning-400 dark:text-lightning-300 mb-2">
                 <span className="text-2xl">⚙️</span>
               </div>
-              <h3 className="font-bold text-orange-800 dark:text-orange-300 mb-2">No Platforms Configured</h3>
-              <p className="text-orange-700 dark:text-orange-200 mb-4">
-                You need to set up at least one platform before you can post.
+              <h3 className="font-bold text-lightning-300 dark:text-lightning-200 mb-2">Platform Deployment Required</h3>
+              <p className="text-tactical-200 dark:text-tactical-100 mb-4">
+                No platforms are currently deployed. Set up your social media platforms to begin broadcasting operations.
               </p>
               <Link
                 href="/platform-setup"
-                className="inline-block bg-orange-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-orange-700 dark:hover:bg-orange-500 transition"
+                className="inline-block bg-lightning-600 text-tactical-900 px-6 py-2 rounded-lg font-bold hover:bg-lightning-500 dark:hover:bg-lightning-500 transition"
               >
-                Set Up Platforms
+                Deploy Platforms
               </Link>
             </div>
           )}
@@ -602,19 +602,19 @@ export default function DashboardPage() {
             disabled={selected.length === 0 || !message.trim()}
             className={`w-full py-3 rounded-xl font-bold text-lg shadow-lg transition-transform ${
               selected.length === 0 || !message.trim()
-                ? 'bg-gray-400 dark:bg-gray-600 text-gray-200 dark:text-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:scale-105'
+                ? 'bg-tactical-600 dark:bg-tactical-700 text-tactical-400 dark:text-tactical-500 cursor-not-allowed'
+                : 'bg-gradient-to-r from-lightning-600 to-lightning-500 text-tactical-900 hover:scale-105 hover:from-lightning-500 hover:to-lightning-400'
             }`}
           >
             {selected.length === 0 
-              ? 'Select platforms to post' 
+              ? 'Select platforms to broadcast' 
               : !message.trim() 
-              ? 'Enter a message to post'
-              : 'Post'
+              ? 'Enter mission update to broadcast'
+              : 'Execute Broadcast'
             }
           </button>
         </form>
-        {status && <p className="mt-6 text-center text-purple-700 dark:text-purple-400 font-semibold">{status}</p>}
+        {status && <p className="mt-6 text-center text-lightning-300 dark:text-lightning-200 font-semibold">{status}</p>}
       </section>
       <Footer />
     </main>

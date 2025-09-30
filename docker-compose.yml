@@ -1,18 +1,16 @@
 services:
-  yall-web:
+  fragout:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
       - ADMIN_PUBKEYS=8dc8688200b447ec2e4018ea5e42dc5d480940cb3f19ca8f361d28179dc4ba5e
       - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-12345
     volumes:
-      - yall_data:/app/data
-      - yall_db:/app/db
+      - fragout_data:/app/data
+      - fragout_db:/app/db
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -32,27 +30,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  caddy:
-    image: caddy:2-alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-      - /var/log/caddy:/var/log/caddy
-    restart: unless-stopped
-    depends_on:
-      - yall-web
+    networks:
+      - pleb-services
 
 volumes:
-  yall_data:
+  fragout_data:
     driver: local
-  yall_db:
+  fragout_db:
     driver: local
-  caddy_data:
-    driver: local
-  caddy_config:
-    driver: local
+
+networks:
+  pleb-services:
+    external: true

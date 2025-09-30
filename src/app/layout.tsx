@@ -4,8 +4,8 @@ import './globals.css'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 
 export const metadata: Metadata = {
-  title: "Y'all Web - Multi-Platform Social Media Management",
-  description: 'Post to Mastodon, Bluesky, Nostr, and X from one place. Secure credential storage with Lightning payments.',
+  title: "FragOut 💣 - Tactical Cross-Platform Operations",
+  description: 'Deploy to Mastodon, Bluesky, Nostr, and X from one tactical interface. Battle-tested, mission-first social media operations.',
   icons: {
     icon: [
       {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#2B2B2B',
+  themeColor: '#1f251f',
 }
 
 export default function RootLayout({

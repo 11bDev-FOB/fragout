@@ -117,7 +117,7 @@ export default function HelpPage() {
         {
           step: 'Generate App Password',
           description: 'Go to Settings → Privacy and Security → App Passwords',
-          details: 'Create a new app password specifically for Y\'all Web. This is different from your login password.'
+          details: 'Create a new app password specifically for FragOut. This is different from your login password.'
         },
         {
           step: 'Use Your Handle',
@@ -159,11 +159,6 @@ export default function HelpPage() {
           step: 'Choose Relays',
           description: 'Add relay servers to broadcast your posts',
           details: 'Popular relays include relay.damus.io, nos.lol, and relay.nostr.band'
-        },
-        {
-          step: 'Fund Lightning (Optional)',
-          description: 'Add sats to your Lightning wallet for tips and zaps',
-          details: 'Not required for posting, but enables receiving tips from other users.'
         }
       ],
       notes: [
@@ -206,20 +201,20 @@ export default function HelpPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-200 via-purple-100 to-pink-100 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900">
+    <main className="min-h-screen bg-gradient-to-br from-tactical-900 via-tactical-800 to-military-900 dark:from-tactical-950 dark:via-tactical-900 dark:to-military-950">
       <Navigation currentPage="help" />
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto p-6">
         
         {/* Header */}
-        <div className="text-center mb-12 bg-white/90 dark:bg-gray-800/90 rounded-2xl shadow-lg p-8 border border-purple-200 dark:border-purple-700">
-          <h1 className="text-4xl font-extrabold mb-4 text-purple-700 dark:text-purple-400 drop-shadow">
-            📚 Platform Setup Guide
+        <div className="text-center mb-12 bg-tactical-800/95 dark:bg-tactical-950/95 rounded-2xl shadow-tactical p-8 border border-lightning-600/30 dark:border-lightning-700/30 backdrop-blur-sm">
+          <h1 className="text-4xl font-extrabold mb-4 text-lightning-300 dark:text-lightning-200 drop-shadow">
+            📚 Mission Intel Guide
           </h1>
-          <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-            Everything you need to know to connect your social media accounts to Y'all Web. 
-            Follow these step-by-step guides to get posting across all platforms!
+          <p className="text-xl text-tactical-200 dark:text-tactical-100 max-w-3xl mx-auto">
+            Everything you need to establish secure communications across all platforms. 
+            Follow these tactical deployment guides to execute multi-platform operations!
           </p>
         </div>
 
@@ -258,21 +253,21 @@ export default function HelpPage() {
         </div>
 
         {/* Quick Overview */}
-        <div className="mb-12 bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4 text-center">🚀 Quick Overview</h2>
+        <div className="mb-12 bg-tactical-800/95 dark:bg-tactical-950/95 rounded-xl shadow-tactical p-6 border border-lightning-600/30 dark:border-lightning-700/30 backdrop-blur-sm">
+          <h2 className="text-2xl font-bold text-lightning-300 dark:text-lightning-200 mb-4 text-center">🚀 Tactical Overview</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {platforms.map((platform) => {
               const colors = getColorClasses(platform.color);
               return (
-                <div key={platform.id} className={`${colors.bg} ${colors.border} border rounded-lg p-4 text-center`}>
+                <div key={platform.id} className="bg-tactical-700/50 dark:bg-tactical-800/50 border border-tactical-600 dark:border-tactical-700 rounded-lg p-4 text-center">
                   <div className="text-3xl mb-2">{platform.icon}</div>
-                  <h3 className={`font-bold text-lg ${colors.text} mb-2`}>{platform.name}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{platform.limits.posts}</p>
+                  <h3 className="font-bold text-lg text-lightning-300 dark:text-lightning-200 mb-2">{platform.name}</h3>
+                  <p className="text-sm text-tactical-300 dark:text-tactical-200 mb-3">{platform.limits.posts}</p>
                   <button
                     onClick={() => toggleSection(platform.id)}
-                    className={`${colors.button} text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors`}
+                    className="bg-lightning-600 hover:bg-lightning-500 text-tactical-900 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
                   >
-                    View Setup Guide
+                    Deploy Guide
                   </button>
                 </div>
               );
@@ -395,7 +390,7 @@ export default function HelpPage() {
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-500 dark:text-green-400 mr-2">•</span>
-                  Store credentials securely in Y'all Web's encrypted storage
+                  Store credentials securely in FragOut's encrypted storage
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-500 dark:text-green-400 mr-2">•</span>
@@ -439,12 +434,6 @@ export default function HelpPage() {
               className="inline-block bg-purple-500 hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
             >
               Try Platform Setup
-            </Link>
-            <Link 
-              href="/pricing"
-              className="inline-block bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-            >
-              Support Development
             </Link>
           </div>
         </div>

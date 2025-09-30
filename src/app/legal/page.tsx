@@ -27,11 +27,11 @@ export default function LegalPage() {
             {/* What This Is */}
             <section>
               <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-4 flex items-center">
-                🤖 What Y'all Web Actually Is
+                🤖 What FragOut Actually Is
               </h2>
               <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
                 <p className="mb-3">
-                  Y'all Web is a <strong>free, open-source project</strong> built by one caffeinated developer who got tired of 
+                  FragOut is a <strong>free, open-source project</strong> built by one caffeinated developer who got tired of 
                   copying and pasting the same post across multiple social media platforms. It's not a company, corporation, 
                   or startup looking to IPO and buy a yacht.
                 </p>
@@ -52,7 +52,7 @@ export default function LegalPage() {
                   <li><strong>Your posts might fail to send.</strong> Check your platforms to be sure.</li>
                   <li><strong>Data might get lost.</strong> Back up anything important.</li>
                   <li><strong>Features might disappear.</strong> Or get completely rewritten overnight.</li>
-                  <li><strong>The server might go down.</strong> Because hosting costs money and plebs gotta eat.</li>
+                  <li><strong>The server might go down.</strong> Because sometimes infrastructure needs maintenance.</li>
                   <li><strong>APIs might change.</strong> Twitter/X especially loves to move the goalposts.</li>
                 </ul>
                 <p className="mt-3 text-sm italic text-red-700 dark:text-red-300">
@@ -94,7 +94,7 @@ export default function LegalPage() {
                   <strong>About feature requests and bug fixes:</strong>
                 </p>
                 <ul className="space-y-2 list-disc list-inside mb-3">
-                  <li><strong>New features:</strong> Added when I feel like it, need it myself, or receive sufficient caffeination bribes ☕</li>
+                  <li><strong>New features:</strong> Added when I feel like it, need it myself, or receive community contributions ☕</li>
                   <li><strong>Bug fixes:</strong> Prioritized by how much they annoy me personally 🐛</li>
                   <li><strong>Timeline:</strong> Could be tomorrow, could be next year, could be never 📅</li>
                   <li><strong>Feature parity:</strong> Different platforms work differently, deal with it 🤷</li>
@@ -127,25 +127,25 @@ export default function LegalPage() {
 
             {/* Financial Reality */}
             <section>
-              <h2 className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mb-4 flex items-center">
-                💰 Financial Reality (AKA Please Donate)
+              <h2 className="text-2xl font-bold text-green-600 dark:text-green-400 mb-4 flex items-center">
+                🆓 Free & Open Source
               </h2>
-              <div className="bg-yellow-50 dark:bg-yellow-900/30 rounded-lg p-4 border border-yellow-200 dark:border-yellow-700">
+              <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-4 border border-green-200 dark:border-green-700">
                 <p className="mb-3">
-                  <strong>Running this costs money:</strong>
+                  <strong>FragOut is permanently free:</strong>
                 </p>
                 <ul className="space-y-1 list-disc list-inside mb-3">
-                  <li>Server hosting (~$20/month)</li>
-                  <li>Domain name (~$15/year)</li>
-                  <li>Coffee for development (~$50/month) ☕</li>
-                  <li>Therapy for dealing with API changes (~$priceless)</li>
+                  <li>No subscription fees</li>
+                  <li>No premium tiers</li>
+                  <li>No hidden costs</li>
+                  <li>Open source and transparent</li>
                 </ul>
                 <p className="mb-3">
-                  If this tool saves you time, consider <a href="/pricing" className="text-yellow-700 dark:text-yellow-300 underline font-semibold">throwing some sats my way</a>. 
-                  If it doesn't work for you, well... you got your money's worth! 🤷‍♂️
+                  This service is provided free of charge by the <a href="https://11b.dev" className="text-green-700 dark:text-green-300 underline font-semibold">11b.dev community</a>. 
+                  If you want to contribute, check out our open source code or help improve the platform! 🚀
                 </p>
-                <p className="text-sm italic text-yellow-700 dark:text-yellow-300">
-                  Donations keep the lights on and the caffeine flowing. 💡⚡
+                <p className="text-sm italic text-green-700 dark:text-green-300">
+                  Free and open source forever. 💡💣
                 </p>
               </div>
             </section>
@@ -171,11 +171,11 @@ export default function LegalPage() {
                 <ul className="space-y-1 list-disc list-inside mb-3">
                   <li>24/7 support (I sleep sometimes)</li>
                   <li>Enterprise SLAs (this isn't enterprise software)</li>
-                  <li>Custom development (unless you're paying enterprise rates)</li>
+                  <li>Custom development (unless you contribute to the open source project)</li>
                   <li>Liability for anything that goes wrong</li>
                 </ul>
                 <p className="text-sm italic text-indigo-700 dark:text-indigo-300">
-                  Be patient, be kind, and remember you're not paying for premium support. 🙏
+                  Be patient, be kind, and remember this is a free community service. 🙏
                 </p>
               </div>
             </section>
@@ -209,7 +209,7 @@ export default function LegalPage() {
               </h2>
               <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg p-6 border border-purple-200 dark:border-purple-700">
                 <p className="text-lg text-center mb-4">
-                  <strong>Y'all Web is a free tool that might save you time.</strong>
+                  <strong>FragOut is a free tool that might save you time.</strong>
                 </p>
                 <p className="text-center mb-4">
                   Use it, don't use it, fork it, improve it, break it, fix it - I don't care. 
@@ -217,7 +217,7 @@ export default function LegalPage() {
                   because Mercury was in retrograde and the Twitter API was having a bad day.
                 </p>
                 <p className="text-center text-sm italic text-purple-600 dark:text-purple-300">
-                  Built with ❤️, ☕, and zero legal budget by <a href="https://pleb.one" target="_blank" rel="noopener noreferrer" className="underline">pleb.one</a>
+                  Built with ❤️, ☕, and zero legal budget by <a href="https://11b.dev" target="_blank" rel="noopener noreferrer" className="underline">11b.dev</a>
                 </p>
               </div>
             </section>

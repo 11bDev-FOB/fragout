@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 text-white py-8 mt-12 border-t-4 border-purple-500">
+    <footer className="bg-gradient-to-r from-tactical-950 via-tactical-900 to-tactical-950 text-tactical-100 py-8 mt-12 border-t-4 border-lightning-500">
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Main Footer Content */}
@@ -10,66 +10,64 @@ export default function Footer() {
           
           {/* About Section */}
           <div>
-            <h3 className="text-xl font-bold mb-3 text-purple-300">🚀 Built by Freedom Tech Rebels</h3>
-            <p className="text-gray-300 text-sm leading-relaxed mb-3">
-              Y'all Web is crafted with love, caffeine, and a healthy disdain for Big Tech censorship by the 
-              mad scientists at <a href="https://pleb.one" target="_blank" rel="noopener noreferrer" 
-              className="text-orange-400 hover:text-orange-300 font-semibold underline">pleb.one</a> 🧪
+            <h3 className="text-xl font-bold mb-3 text-lightning-300">💣 Battle-Tested Code</h3>
+            <p className="text-tactical-200 text-sm leading-relaxed mb-3">
+              FragOut is engineered with precision, discipline, and a mission-first mentality by the 
+              tactical code warriors at <a href="https://11b.dev" target="_blank" rel="noopener noreferrer" 
+              className="text-lightning-400 hover:text-lightning-300 font-semibold underline">11b.dev</a> 🎯
             </p>
-            <p className="text-gray-400 text-xs italic">
-              "Why use one platform when you can annoy all of them simultaneously?" - Ancient Pleb Wisdom
+            <p className="text-tactical-400 text-xs italic">
+              "Adapt and overcome - one platform at a time" - 11b.dev Motto
             </p>
           </div>
 
           {/* Links Section */}
           <div>
-            <h3 className="text-xl font-bold mb-3 text-purple-300">🛠️ More Freedom Tech</h3>
+            <h3 className="text-xl font-bold mb-3 text-lightning-300">🛠️ Mission Support</h3>
             <div className="space-y-2 text-sm">
               <div>
-                <a href="https://pleb.one" target="_blank" rel="noopener noreferrer" 
-                   className="text-orange-400 hover:text-orange-300 transition-colors">
-                  🌐 pleb.one - The Mothership
+                <a href="https://11b.dev" target="_blank" rel="noopener noreferrer" 
+                   className="text-lightning-400 hover:text-lightning-300 transition-colors">
+                  � 11b.dev - Forward Operating Base
                 </a>
               </div>
               <div>
-                <span className="text-gray-400">⚡ Lightning tools that actually work</span>
+                <span className="text-tactical-300">💣 Simple tools for real problems</span>
               </div>
               <div>
-                <span className="text-gray-400">🟣 Nostr apps for the decentralized future</span>
+                <span className="text-tactical-300">� Military-grade privacy applications</span>
               </div>
               <div>
-                <span className="text-gray-400">₿ Bitcoin integrations for maximum sovereignty</span>
+                <span className="text-tactical-300">🎯 Mission-first software development</span>
               </div>
-              <div className="mt-3 pt-2 border-t border-gray-700">
-                <span className="text-xs text-gray-500">
-                  Building the tools Big Tech doesn't want you to have 😈
+              <div className="mt-3 pt-2 border-t border-tactical-700">
+                <span className="text-xs text-tactical-500">
+                  No AI, no blockchain, no "disruption" - just useful software �
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Support Section */}
+          {/* Community Section */}
           <div>
-            <h3 className="text-xl font-bold mb-3 text-purple-300">💰 Support the Rebellion</h3>
+            <h3 className="text-xl font-bold mb-3 text-lightning-300">🤝 Rally Point</h3>
             <div className="space-y-2 text-sm">
               <div>
-                <Link href="/pricing" className="text-green-400 hover:text-green-300 transition-colors">
-                  ⚡ Zap us some sats
-                </Link>
-              </div>
-              <div>
-                <a href="https://github.com/PlebOne/yall-web" target="_blank" rel="noopener noreferrer"
-                   className="text-blue-400 hover:text-blue-300 transition-colors">
-                  🐙 Star us on GitHub
+                <a href="https://github.com/11bDev-FOB" target="_blank" rel="noopener noreferrer"
+                   className="text-military-400 hover:text-military-300 transition-colors">
+                  🐙 Star our GitHub ops
                 </a>
               </div>
               <div>
-                <span className="text-gray-400">📢 Tell your freedom-loving friends</span>
+                <span className="text-tactical-300">� Spread the mission</span>
               </div>
-              <div className="mt-3 pt-2 border-t border-gray-700">
-                <p className="text-xs text-gray-500">
-                  Every sat helps us build more tools to escape the matrix 🔴💊<br />
-                  <span className="text-xs">Bitcoin • Lightning • Monero accepted</span>
+              <div>
+                <span className="text-tactical-300">🔧 Contribute to the cause</span>
+              </div>
+              <div className="mt-3 pt-2 border-t border-tactical-700">
+                <p className="text-xs text-tactical-400">
+                  Help us build tools that actually work 🎖️<br />
+                  <span className="text-xs">Free and open source forever</span>
                 </p>
               </div>
             </div>
@@ -77,12 +75,12 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-700 pt-6">
+        <div className="border-t border-tactical-700 pt-6">
           {/* Privacy Policy Notice */}
-          <div className="mb-4 p-3 bg-gray-800 rounded-lg border border-gray-600">
-            <p className="text-xs text-gray-300 text-center">
-              🛡️ <strong>Privacy Notice:</strong> Accounts auto-delete after 30 days of inactivity. 
-              <Link href="/settings" className="text-blue-400 hover:text-blue-300 underline ml-1">
+          <div className="mb-4 p-3 bg-tactical-800 rounded-lg border border-tactical-600">
+            <p className="text-xs text-tactical-200 text-center">
+              🛡️ <strong>OpSec Notice:</strong> Accounts auto-delete after 30 days of inactivity. 
+              <Link href="/settings" className="text-lightning-400 hover:text-lightning-300 underline ml-1">
                 Manage in Settings
               </Link>
             </p>
@@ -92,48 +90,48 @@ export default function Footer() {
             
             {/* Copyright & Credits */}
             <div className="text-center md:text-left">
-              <p className="text-sm text-gray-400">
-                © 2025 <a href="https://pleb.one" target="_blank" rel="noopener noreferrer" 
-                className="text-orange-400 hover:text-orange-300">pleb.one</a> - 
-                Because freedom isn't free, but our software is 🏴‍☠️
+              <p className="text-sm text-tactical-300">
+                © 2025 <a href="https://11b.dev" target="_blank" rel="noopener noreferrer" 
+                className="text-lightning-400 hover:text-lightning-300">11b.dev</a> - 
+                Adapt and overcome, one line of code at a time 💣
               </p>
-              <p className="text-xs text-gray-500 mt-1">
-                Made with ❤️, ☕, and a sprinkle of anarchist pixie dust ✨
+              <p className="text-xs text-tactical-500 mt-1">
+                Built with discipline, crafted with soul 🎖️
               </p>
             </div>
 
             {/* Social Links */}
             <div className="flex space-x-4 text-sm">
-              <a href="https://github.com/PlebOne" target="_blank" rel="noopener noreferrer"
-                 className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://github.com/11bDev-FOB" target="_blank" rel="noopener noreferrer"
+                 className="text-tactical-300 hover:text-lightning-300 transition-colors">
                 🐙 GitHub
               </a>
-              <span className="text-gray-600">|</span>
-              <a href="https://pleb.one" target="_blank" rel="noopener noreferrer"
-                 className="text-gray-400 hover:text-white transition-colors">
-                🌐 Website
+              <span className="text-tactical-600">|</span>
+              <a href="https://11b.dev" target="_blank" rel="noopener noreferrer"
+                 className="text-tactical-300 hover:text-lightning-300 transition-colors">
+                � Base
               </a>
-              <span className="text-gray-600">|</span>
-              <Link href="/help" className="text-gray-400 hover:text-white transition-colors">
-                📚 Help
+              <span className="text-tactical-600">|</span>
+              <Link href="/help" className="text-tactical-300 hover:text-lightning-300 transition-colors">
+                📚 Intel
               </Link>
-              <span className="text-gray-600">|</span>
-              <Link href="/legal" className="text-gray-400 hover:text-white transition-colors">
-                ⚖️ Legal Mumbo Jumbo
+              <span className="text-tactical-600">|</span>
+              <Link href="/legal" className="text-tactical-300 hover:text-lightning-300 transition-colors">
+                ⚖️ Rules of Engagement
               </Link>
             </div>
           </div>
 
-          {/* Snarky Quote Rotation */}
-          <div className="text-center mt-4 pt-4 border-t border-gray-800">
-            <p className="text-xs text-gray-500 italic">
+          {/* Tactical Quote Rotation */}
+          <div className="text-center mt-4 pt-4 border-t border-tactical-800">
+            <p className="text-xs text-tactical-500 italic">
               {[
-                "\"Decentralization: because putting all your eggs in Elon's basket seemed unwise\" 🥚",
-                "\"Y'all Web: Making cross-posting great again, one platform at a time\" 🎯",
-                "\"Warning: May cause excessive freedom and reduced dependency on Big Tech\" ⚠️",
-                "\"Side effects may include: sovereignty, privacy, and the urge to orange-pill friends\" 🟠",
-                "\"Not your keys, not your coins. Not your code, not your freedom.\" 🔑",
-                "\"Built by plebs, for plebs, with pleb-level humor\" 🤠"
+                "\"Mission first, people always - even in code\" 💣",
+                "\"FragOut: Tactical cross-posting for the digital battlefield\" 🎯",
+                "\"No mission too difficult, no code too complex\" 💪",
+                "\"Discipline equals freedom - in the field and in software\" 🏴",
+                "\"Built by veterans, tested in production, proven in combat\" 🎖️",
+                "\"Simple tools for real problems - the 11b.dev way\" 💣"
               ][Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % 6]}
             </p>
           </div>

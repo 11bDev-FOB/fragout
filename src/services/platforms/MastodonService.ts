@@ -36,7 +36,7 @@ export class MastodonService extends BasePlatformService {
         headers: {
           'Authorization': `Bearer ${access_token}`,
           'Content-Type': 'application/json',
-          'User-Agent': 'YallWeb/1.0'
+          'User-Agent': 'FragOut/1.0'
         },
         signal: controller.signal
       });

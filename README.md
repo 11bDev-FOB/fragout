@@ -1,7 +1,7 @@
 
-# Yall Web
+# FragOut
 
-**Yall Web** is a free, open-source platform for posting to multiple social networks from a single dashboard. It features real-time admin statistics, robust post tracking, system health monitoring, and a snarky legal disclaimer. Built with Next.js, SQLite, and Docker for easy deployment.
+**FragOut** is a free, open-source platform for posting to multiple social networks from a single dashboard. It features real-time admin statistics, robust post tracking, system health monitoring, and a snarky legal disclaimer. Built with Next.js, SQLite, and Docker for easy deployment.
 
 - **Multi-platform posting:** Bluesky, Mastodon, Nostr, Twitter, and more
 - **Admin dashboard:** Real usage stats, post counts, and system health
@@ -29,8 +29,8 @@
 
 ```bash
 # Clone and install
-git clone https://github.com/PlebOne/yall-web.git
-cd yall-web
+git clone https://github.com/11b-dev/fragout.git
+cd fragout
 npm install
 
 # Set up environment (REQUIRED)

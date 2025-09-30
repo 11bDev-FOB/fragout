@@ -45,24 +45,23 @@ export default function Navigation({ currentPage }: NavigationProps) {
   const navigationItems = [
     { href: '/dashboard', label: 'Dashboard', isAdmin: false },
     { href: '/platform-setup', label: 'Platforms', isAdmin: false },
-    { href: '/pricing', label: 'Support Us', isAdmin: false },
     { href: '/help', label: 'Help', isAdmin: false },
     { href: '/settings', label: 'Settings', isAdmin: false },
-    { href: '/admin', label: 'Admin', isAdmin: true, className: 'text-red-600 dark:text-red-400' },
+    { href: '/admin', label: 'Admin', isAdmin: true, className: 'text-lightning-500 dark:text-lightning-400' },
   ];
 
   return (
     <>
-      <nav className="bg-white/90 dark:bg-gray-900/90 shadow-lg border-b border-purple-200 dark:border-gray-700 relative z-50">
+      <nav className="bg-tactical-900/95 dark:bg-tactical-950/95 shadow-tactical border-b border-tactical-700 dark:border-tactical-800 relative z-50 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link 
               href="/" 
-              className="font-extrabold text-2xl text-purple-700 dark:text-purple-400 drop-shadow flex-shrink-0"
+              className="font-extrabold text-2xl text-lightning-400 dark:text-lightning-300 drop-shadow flex-shrink-0 hover:text-lightning-300 dark:hover:text-lightning-200 transition-colors"
               onClick={closeMobileMenu}
             >
-              Y'all Web
+              FragOut 💣
             </Link>
 
             {/* Desktop Navigation */}
@@ -75,10 +74,10 @@ export default function Navigation({ currentPage }: NavigationProps) {
                     key={item.href}
                     href={item.href}
                     className={`font-semibold hover:underline transition-colors ${
-                      item.className || 'text-purple-600 dark:text-purple-400'
+                      item.className || 'text-tactical-200 dark:text-tactical-100 hover:text-lightning-300 dark:hover:text-lightning-200'
                     } ${
                       isCurrentPage(item.href.substring(1)) 
-                        ? `border-b-2 ${item.isAdmin ? 'border-red-600 dark:border-red-400' : 'border-purple-600 dark:border-purple-400'}` 
+                        ? `border-b-2 ${item.isAdmin ? 'border-lightning-500 dark:border-lightning-400' : 'border-lightning-400 dark:border-lightning-300'}` 
                         : ''
                     }`}
                   >
@@ -94,7 +93,7 @@ export default function Navigation({ currentPage }: NavigationProps) {
               <DarkModeToggle />
               <button
                 onClick={toggleMobileMenu}
-                className="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 focus:outline-none focus:text-purple-800 dark:focus:text-purple-200 p-2"
+                className="text-tactical-200 dark:text-tactical-100 hover:text-lightning-300 dark:hover:text-lightning-200 focus:outline-none focus:text-lightning-300 dark:focus:text-lightning-200 p-2 transition-colors"
                 aria-label="Toggle mobile menu"
               >
                 {isMobileMenuOpen ? (
@@ -113,7 +112,7 @@ export default function Navigation({ currentPage }: NavigationProps) {
 
         {/* Mobile Navigation Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-white dark:bg-gray-900 border-t border-purple-200 dark:border-gray-700 shadow-lg relative z-50">
+          <div className="md:hidden bg-tactical-900 dark:bg-tactical-950 border-t border-tactical-700 dark:border-tactical-800 shadow-tactical relative z-50">
             <div className="px-4 pt-2 pb-3 space-y-1">
               {navigationItems.map((item) => {
                 if (item.isAdmin && !isAdmin) return null;
@@ -123,11 +122,11 @@ export default function Navigation({ currentPage }: NavigationProps) {
                     key={item.href}
                     href={item.href}
                     className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                      item.className || 'text-purple-600 dark:text-purple-400'
+                      item.className || 'text-tactical-200 dark:text-tactical-100'
                     } ${
                       isCurrentPage(item.href.substring(1))
-                        ? `bg-purple-50 dark:bg-gray-800 ${item.isAdmin ? 'text-red-700 dark:text-red-300' : 'text-purple-700 dark:text-purple-300'}`
-                        : 'hover:bg-purple-50 dark:hover:bg-gray-800 hover:text-purple-700 dark:hover:text-purple-300'
+                        ? `bg-tactical-800 dark:bg-tactical-900 ${item.isAdmin ? 'text-lightning-400 dark:text-lightning-300' : 'text-lightning-300 dark:text-lightning-200'}`
+                        : 'hover:bg-tactical-800 dark:hover:bg-tactical-900 hover:text-lightning-300 dark:hover:text-lightning-200'
                     }`}
                     onClick={closeMobileMenu}
                   >
@@ -143,7 +142,7 @@ export default function Navigation({ currentPage }: NavigationProps) {
       {/* Mobile menu overlay - positioned behind the menu */}
       {isMobileMenuOpen && (
         <div 
-          className="md:hidden fixed inset-0 z-40 bg-black bg-opacity-25" 
+          className="md:hidden fixed inset-0 z-40 bg-tactical-950 bg-opacity-75 backdrop-blur-sm" 
           onClick={closeMobileMenu}
         />
       )}
