@@ -20,6 +20,17 @@ export default function AuthPage() {
   const [requires2FA, setRequires2FA] = useState(false);
   const [twoFactorCode, setTwoFactorCode] = useState('');
 
+  // Helper function to get return URL from query params
+  const getReturnUrl = (): string => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('returnUrl') || '/dashboard';
+  };
+
+  // Helper function to redirect after successful login
+  const redirectAfterLogin = () => {
+    window.location.href = getReturnUrl();
+  };
+
   async function handleNip07Login() {
     setError('');
     setLoading(true);
@@ -46,7 +57,7 @@ export default function AuthPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        window.location.href = '/dashboard';
+        redirectAfterLogin();
       } else {
         setError(data.error || 'Login failed.');
       }
@@ -123,7 +134,7 @@ export default function AuthPage() {
         
         console.log('✅ Authentication successful - private key stored securely');
         
-        window.location.href = '/dashboard';
+        redirectAfterLogin();
       } else {
         setError(data.error || 'Login failed.');
       }
@@ -180,7 +191,7 @@ export default function AuthPage() {
           setConfirmPassword('');
           setTwoFactorCode('');
         } else {
-          window.location.href = '/dashboard';
+          redirectAfterLogin();
         }
       } else if (data.requires2FA) {
         setRequires2FA(true);

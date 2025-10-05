@@ -22,6 +22,39 @@ export default function DashboardPage() {
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
 
+  // Handle URL query parameters for prefilling post content
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get('url');
+    const text = params.get('text') || '';
+    const title = params.get('title') || '';
+    
+    if (url || text || title) {
+      // Build the prefilled message
+      let prefilledMessage = '';
+      
+      if (title) {
+        prefilledMessage = title;
+      } else if (text) {
+        prefilledMessage = text;
+      }
+      
+      if (url) {
+        prefilledMessage = prefilledMessage 
+          ? `${prefilledMessage}\n\n${url}` 
+          : url;
+      }
+      
+      setMessage(prefilledMessage.trim());
+      
+      // Optional: Show a status message to indicate prefill
+      if (prefilledMessage.trim()) {
+        setStatus('📝 Mission briefing prefilled from external source');
+        setTimeout(() => setStatus(''), 5000);
+      }
+    }
+  }, []);
+
   // Check for NIP-07 availability
   useEffect(() => {
     const checkNip07 = () => {

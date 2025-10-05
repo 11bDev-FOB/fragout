@@ -64,7 +64,10 @@ export async function middleware(request: NextRequest) {
   const sessionToken = token || manualToken;
   if (!sessionToken) {
     console.log('Middleware: No session token, redirecting to /auth');
-    const redirectResponse = NextResponse.redirect(new URL('/auth', request.url));
+    // Preserve query parameters when redirecting to auth
+    const authUrl = new URL('/auth', request.url);
+    authUrl.searchParams.set('returnUrl', request.nextUrl.pathname + request.nextUrl.search);
+    const redirectResponse = NextResponse.redirect(authUrl);
     return addSecurityHeaders(request, redirectResponse);
   }
   
@@ -74,7 +77,10 @@ export async function middleware(request: NextRequest) {
     return secureResponse;
   } catch (e) {
     console.log('Middleware: Invalid session token, redirecting to /auth');
-    const redirectResponse = NextResponse.redirect(new URL('/auth', request.url));
+    // Preserve query parameters when redirecting to auth
+    const authUrl = new URL('/auth', request.url);
+    authUrl.searchParams.set('returnUrl', request.nextUrl.pathname + request.nextUrl.search);
+    const redirectResponse = NextResponse.redirect(authUrl);
     return addSecurityHeaders(request, redirectResponse);
   }
 }
