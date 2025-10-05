@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-export default function ComposePage() {
+function ComposeRedirect() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -14,11 +14,24 @@ export default function ComposePage() {
   }, [searchParams, router]);
 
   return (
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-lightning-500 dark:border-lightning-400 mx-auto mb-4"></div>
+      <p className="text-xl text-tactical-700 dark:text-lightning-400 font-semibold">Redirecting to command center...</p>
+    </div>
+  );
+}
+
+export default function ComposePage() {
+  return (
     <main className="min-h-screen bg-gradient-to-br from-tactical-50 via-military-100 to-tactical-100 dark:from-tactical-950 dark:via-military-900 dark:to-tactical-900 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-lightning-500 dark:border-lightning-400 mx-auto mb-4"></div>
-        <p className="text-xl text-tactical-700 dark:text-lightning-400 font-semibold">Redirecting to command center...</p>
-      </div>
+      <Suspense fallback={
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-lightning-500 dark:border-lightning-400 mx-auto mb-4"></div>
+          <p className="text-xl text-tactical-700 dark:text-lightning-400 font-semibold">Loading...</p>
+        </div>
+      }>
+        <ComposeRedirect />
+      </Suspense>
     </main>
   );
 }
