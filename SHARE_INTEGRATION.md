@@ -13,8 +13,10 @@ FragOut supports receiving content from external applications via URL query para
 To share content with FragOut, construct a URL with query parameters:
 
 ```
-https://fragout.11b.dev/dashboard?url=https://example.com&text=Check%20this%20out
+https://fragout.11b.dev/compose?url=https://example.com&text=Check%20this%20out
 ```
+
+**Note:** Both `/compose` and `/dashboard` routes are supported and will work identically.
 
 ### **Supported Parameters**
 

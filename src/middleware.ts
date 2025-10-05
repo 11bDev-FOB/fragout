@@ -89,6 +89,7 @@ export const config = {
   matcher: [
     '/platform-setup',
     '/dashboard',
+    '/compose',
     '/settings',
     '/admin',
     // Add more protected routes here
