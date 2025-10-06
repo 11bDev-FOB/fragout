@@ -457,12 +457,26 @@ export default function DashboardPage() {
       <section className="max-w-2xl mx-auto mt-6 bg-tactical-800/95 dark:bg-tactical-950/95 rounded-2xl shadow-tactical p-10 border border-lightning-600/30 dark:border-lightning-700/30 backdrop-blur-sm">
         <h1 className="text-3xl font-extrabold mb-6 text-center text-lightning-300 dark:text-lightning-200 drop-shadow">Mission Broadcast</h1>
         <form onSubmit={handlePost} className="space-y-6">
-          <textarea
-            className="w-full p-4 border-2 border-tactical-600 dark:border-tactical-700 bg-tactical-700 dark:bg-tactical-800 text-tactical-100 rounded-xl min-h-[120px] text-lg focus:outline-none focus:border-lightning-400 dark:focus:border-lightning-500 placeholder-tactical-400"
-            placeholder="What's the mission status?"
-            value={message}
-            onChange={e => setMessage(e.target.value)}
-          />
+          <div className="relative">
+            <textarea
+              className="w-full p-4 border-2 border-tactical-600 dark:border-tactical-700 bg-tactical-700 dark:bg-tactical-800 text-tactical-100 rounded-xl min-h-[120px] text-lg focus:outline-none focus:border-lightning-400 dark:focus:border-lightning-500 placeholder-tactical-400"
+              placeholder="What's the mission status?"
+              value={message}
+              onChange={e => setMessage(e.target.value)}
+            />
+            {/* Character count warning for Bluesky */}
+            {selected.includes('bluesky') && message.length > 0 && (
+              <div className={`absolute bottom-2 right-2 text-xs px-2 py-1 rounded ${
+                [...message].length > 300 
+                  ? 'bg-red-600 text-white' 
+                  : [...message].length > 270 
+                  ? 'bg-yellow-600 text-white' 
+                  : 'bg-tactical-600 text-tactical-200'
+              }`}>
+                Bluesky: {[...message].length}/300
+              </div>
+            )}
+          </div>
           
           {/* Image Upload Section */}
           <div className="space-y-4">

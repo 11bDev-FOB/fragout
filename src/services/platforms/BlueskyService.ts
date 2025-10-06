@@ -101,6 +101,17 @@ export class BlueskyService extends BasePlatformService {
     }
   }
 
+  // Count graphemes (unicode-aware character counting)
+  private countGraphemes(text: string): number {
+    // Use Intl.Segmenter if available (Node 16+), otherwise fallback to spreading
+    if (typeof Intl !== 'undefined' && (Intl as any).Segmenter) {
+      const segmenter = new (Intl as any).Segmenter('en', { granularity: 'grapheme' });
+      return Array.from(segmenter.segment(text)).length;
+    }
+    // Fallback: spread operator handles most unicode correctly
+    return [...text].length;
+  }
+
   public async post(content: PostContent, credentials: Record<string, string>): Promise<PostResult> {
     console.log('BlueSky post called with credentials keys:', Object.keys(credentials));
     // Handle both old and new field names
@@ -114,6 +125,17 @@ export class BlueskyService extends BasePlatformService {
         error: 'Missing required credentials: handle and appPassword'
       };
     }
+
+    // Validate text length (Bluesky limit is 300 graphemes)
+    const graphemeCount = this.countGraphemes(content.text);
+    if (graphemeCount > 300) {
+      console.error(`BlueSky text too long: ${graphemeCount} graphemes (max 300)`);
+      return {
+        success: false,
+        error: `Text is too long for Bluesky: ${graphemeCount} graphemes (max 300). Please shorten your message.`
+      };
+    }
+    console.log(`BlueSky text length: ${graphemeCount} graphemes (char count: ${content.text.length})`);
 
     // Clean up invisible characters from credentials - try multiple approaches
     let cleanHandle = handle.trim();
